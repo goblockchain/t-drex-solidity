@@ -1,11 +1,30 @@
+// TODO: will we add license?
 pragma solidity ^0.8.13;
 
 /*
  * TODO: IMPORTS
  */
 
+// TDrexLibrary
+import "./libraries/TDrexLibrary.sol";
+// TransferHelper
+import "./libraries/TransferHelper.sol";
+
+// ITDrexFactory
+// TODO: import from core.
+// ITDrexRouter
+// TODO: import
+
+// SafeMath
+import "./libraries/SafeMath.sol";
+// INative
+import "./interfaces/INative.sol";
+// IERC20
+import "./interfaces/IERC20.sol";
+
 contract TDrexRouter {
     // NOTE: No need to use SafeMath because of pragma > 0.8
+    using SafeMath for uint;
 
     address public immutable factory;
     // TODO: Check what's the wrapped token of the native of the Besu blockchain
@@ -133,7 +152,7 @@ contract TDrexRouter {
             amountBMin
         );
         address pair = TDrexLibrary.pairFor(factory, tokenA, tokenB);
-        //NOTE: isn't it better to use _msgSender() function here?
+        //TODO: check if isn't it better to use _msgSender() function here?
         TransferHelper.safeTransferFrom(tokenA, msg.sender, pair, amountA);
         TransferHelper.safeTransferFrom(tokenB, msg.sender, pair, amountB);
         //NOTE: This LP token minted when liquidity is added can be the representation of the titulo.
