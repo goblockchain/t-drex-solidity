@@ -259,4 +259,28 @@ contract TDrexRouter {
     // TODO: removeLiquidityNative of fee on transfer tokens.
 
     // **** SWAP functions ****
+
+
+    // **** LIBRARY functions ****
+    function quote(uint amountA, uint reserveA, uint reserveB) public pure virtual override returns (uint amountB) {
+        return TDrexLibrary.quote(amountA, reserveA, reserveB);
+    }
+
+    function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) public pure virtual override returns (uint amountOut) {
+        return TDrexLibrary.getAmountOut(amountIn, reserveIn, reserveOut);
+    }
+
+    function getAmountIn( uint amountOut, uint reserveIn, uint reserveOut) public pure virtual override returns(uint amountIn) {
+        return TDrexLibrary.getAmountIn(amountIn, reserveIn, reserveOut);
+    }
+
+    function getAmountsOut(uint amountIn, address[] memory path) pubic view virtual override returns (uint [] memory amounts) {
+        return TDrexLibrary.getAmountsOut(factory, amountIn, path);
+    }
+
+    function getAmountsIn( uint amountOut, address[] memory path) public view virtual override returns(uint[] memory amounts) {
+        return TDrexLibrary.getAmountIn(factory, amountOut, path);
+    }
+}
+
 }
