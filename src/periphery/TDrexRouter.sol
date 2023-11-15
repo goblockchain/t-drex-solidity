@@ -5,22 +5,20 @@ pragma solidity ^0.8.13;
  * TODO: IMPORTS
  */
 
-// TDrexLibrary
-import "./libraries/TDrexLibrary.sol";
-// TransferHelper
-import "./libraries/TransferHelper.sol";
-
 // ITDrexFactory
 // TODO: import from core.
+// TransferHelper
+import "../libraries/TransferHelper.sol";
 // ITDrexRouter
 // TODO: import
-
+// TDrexLibrary
+import "../libraries/TDrexLibrary.sol";
 // SafeMath
-import "./libraries/SafeMath.sol";
-// INative
-import "./interfaces/INative.sol";
+import "../libraries/SafeMath.sol";
 // IERC20
-import "./interfaces/IERC20.sol";
+import "../interfaces/IERC20.sol";
+// INative
+import "../interfaces/INative.sol";
 
 contract TDrexRouter {
     // NOTE: No need to use SafeMath because of pragma > 0.8
