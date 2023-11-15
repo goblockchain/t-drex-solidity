@@ -2,8 +2,9 @@ pragma solidity ^0.8.13;
 
 // TODO: import TDrexPair instead of below
 // import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
-
+import "";
 import "./SafeMath.sol";
+import "../../lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol";
 
 library UniswapV2Library {
     using SafeMath for uint;
@@ -25,9 +26,14 @@ library UniswapV2Library {
         address tokenB
     ) internal pure returns (address token0, address token1) {
         if (tokenA == tokenB) revert Library_Identical_Addresses(tokenA);
-        (token0, token1) = tokenA < tokenB
-            ? (tokenA, tokenB)
-            : (tokenB, tokenA);
+
+        // ERC20 InterfaceID == 0x36372b07
+        // ERC1155 InterfaceID == 0xd9b67a26
+        if (IERC165(tokenA).supportsInterface("0x36372b07")) {
+            (tokenA, tokenB);
+        } else {
+            (tokenB, tokenA);
+        }
         if (token0 == address(0)) revert Library_Zero_Address();
     }
 
@@ -35,7 +41,8 @@ library UniswapV2Library {
     function pairFor(
         address factory,
         address tokenA,
-        address tokenB
+        address tokenB,
+        uint id
     ) internal pure returns (address pair) {
         (address token0, address token1) = sortTokens(tokenA, tokenB);
 
@@ -46,7 +53,7 @@ library UniswapV2Library {
                     abi.encodePacked(
                         hex"ff",
                         factory,
-                        keccak256(abi.encodePacked(token0, token1)),
+                        keccak256(abi.encodePacked(token0, token1, id)),
                         hex"96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f" // init code hash
                     )
                 )
@@ -58,11 +65,12 @@ library UniswapV2Library {
     function getReserves(
         address factory,
         address tokenA,
-        address tokenB
+        address tokenB,
+        uint id
     ) internal view returns (uint reserveA, uint reserveB) {
         (address token0, ) = sortTokens(tokenA, tokenB);
         (uint reserve0, uint reserve1, ) = ITDrexPair(
-            pairFor(factory, tokenA, tokenB)
+            pairFor(factory, tokenA, tokenB, id)
         ).getReserves();
         (reserveA, reserveB) = tokenA == token0
             ? (reserve0, reserve1)

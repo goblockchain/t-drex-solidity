@@ -169,7 +169,9 @@ contract TDrexRouter {
         address pair = TDrexLibrary.pairFor(factory, tokenA, tokenB);
         //TODO: check if isn't it better to use _msgSender() function here?
         TransferHelper.safeTransferFrom(tokenA, msg.sender, pair, amountA);
-        TransferHelper.safeTransferFrom(tokenB, msg.sender, pair, amountB);
+        tokenB.safeTransferFrom(msg.sender, pair, amountB);
+        // TransferHelper.safeTransferFrom(tokenB, msg.sender, pair, amountB);
+
         //NOTE: This LP token minted when liquidity is added can be the representation of the titulo.
         liquidity = ITDrexPair(pair).mint(to);
     }

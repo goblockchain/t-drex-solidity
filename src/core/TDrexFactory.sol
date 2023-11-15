@@ -2,6 +2,7 @@ pragma solidity ^0.8.13;
 
 import "./interfaces/IUniswapV2Factory.sol";
 import "./UniswapV2Pair.sol";
+import "../../lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol";
 
 contract TDrexFactory is ITDrexFactory {
     // Errors
@@ -49,27 +50,39 @@ contract TDrexFactory is ITDrexFactory {
         address tokenA,
         address tokenB,
         uint amount0,
-        uint amount1
+        uint amount1,
+        uint id
     ) external returns (address pair) {
         _isGov(msg.sender);
         if (tokenA == tokenB) revert Factory_IdenticalAddresses();
         // price is 0
         if (amount0 == 0 || amount1 == 0) revert Factory_ZeroAmount();
+
+        // ERC20 InterfaceID == 0x36372b07
+        // ERC1155 InterfaceID == 0xd9b67a26
+        (address token0, address token1) = IERC165(tokenA).supportsInterface(
+            "0x36372b07"
+        )
+            ? (tokenA, tokenB)
+            : (tokenB, tokenA);
+        // OLD:
+        /*
         (address token0, address token1) = tokenA < tokenB
             ? (tokenA, tokenB)
             : (tokenB, tokenA);
+        */
         if (token0 == address(0)) revert Factory_ZeroAddress();
         if (getPair[token0][token1] != address(0)) revert Factory_PairExists();
         // TODO: check this line's working.
         bytes memory bytecode = type(TDrexPair).creationCode;
         // price is also used as a way to determine salt.
         bytes32 salt = keccak256(
-            abi.encodePacked(token0, token1, amount0, amount1)
+            abi.encodePacked(token0, token1, amount0, amount1, id)
         );
         assembly {
             pair := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
-        ITDrexPair(pair).initialize(token0, token1, amount0, amount1);
+        ITDrexPair(pair).initialize(token0, token1, amount0, amount1, id);
         getPair[token0][token1] = pair;
         getPair[token1][token0] = pair; // populate mapping in the reverse direction
         allPairs.push(pair);

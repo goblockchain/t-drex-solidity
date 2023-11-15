@@ -3,11 +3,11 @@ pragma solidity =0.5.16;
 import "./interfaces/IUniswapV2ERC20.sol";
 import "./libraries/SafeMath.sol";
 
-contract UniswapV2ERC20 is IUniswapV2ERC20 {
+contract TDrexERC20 is ITDrexERC20 {
     using SafeMath for uint;
 
-    string public constant name = "Uniswap V2";
-    string public constant symbol = "UNI-V2";
+    string public constant name = "T-Drex";
+    string public constant symbol = "TDrex";
     uint8 public constant decimals = 18;
     uint public totalSupply;
     mapping(address => uint) public balanceOf;

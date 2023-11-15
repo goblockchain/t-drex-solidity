@@ -2,7 +2,7 @@ pragma solidity ^0.8.13;
 
 import "./interfaces/IUniswapV2Pair.sol";
 // TODO: Substitute by an ERC1155
-import "./UniswapV2ERC20.sol";
+import "./TDrexERC1155.sol";
 
 import "./libraries/Math.sol";
 import "./libraries/UQ112x112.sol";
@@ -10,19 +10,21 @@ import "./interfaces/IERC20.sol";
 import "./interfaces/IUniswapV2Factory.sol";
 import "./interfaces/IUniswapV2Callee.sol";
 
-contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
+contract TDrexPair is ITDrexPair, TDrexERC1155 {
     using SafeMath for uint;
     using UQ112x112 for uint224;
 
     // errors
-    error Pair_Forbidden();
+    error Pair_Forbidden;
     error Pair_Overflow(uint balance0, uint balance1);
-    error Pair_Insufficient_Minted();
+    error Pair_Insufficient_Minted;
     error Pair_Insufficient_Output(uint amount1, uint amount2);
     // here uint >= uint112 comparison is made.
-    error Insufficient_Liquidity(uint amount1, uint amount2);
-    error Pair_Invalid_To();
-    error TDrex_K();
+    error Pair_Insufficient_Liquidity(uint amount1, uint amount2);
+    error Pair_Invalid_To;
+    error Pair_NotExpired;
+    error Pair_TDrex_K;
+    error Pair_GovHasNotApprovedPool;
 
     uint public constant MINIMUM_LIQUIDITY = 10 ** 3;
     // TODO: check whether the function's sig to be called for ERC1155 transfer is this one.
@@ -32,10 +34,13 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
     address public factory;
     address public token0;
     address public token1;
+    address rewardToken;
+    bool distribute;
 
     // ADDED BY CAIO
     uint public initialPrice0;
     uint public initialPrice1;
+    uint public ID; // ERC1155 tokenID.
 
     uint112 private reserve0; // uses single storage slot, accessible via getReserves
     uint112 private reserve1; // uses single storage slot, accessible via getReserves
@@ -103,15 +108,18 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         address _token0,
         address _token1,
         uint _amount0,
-        uint _amount1
+        uint _amount1,
+        uint _id
     ) external {
         if (msg.sender != factory) revert Pair_Forbidden();
-        require(msg.sender == factory, "TDrex: FORBIDDEN"); // sufficient check
+
         token0 = _token0;
         token1 = _token1;
         // initial price
         initialPrice0 = _amount0;
         initialPrice1 = _amount1;
+        // id
+        ID = _id;
     }
 
     // update reserves and, on the first call per block, price accumulators
@@ -174,7 +182,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
     function mint(address to) external lock returns (uint liquidity) {
         (uint112 _reserve0, uint112 _reserve1, ) = getReserves(); // gas savings
         uint balance0 = IERC20(token0).balanceOf(address(this));
-        uint balance1 = IERC20(token1).balanceOf(address(this));
+        uint balance1 = IERC1155(token1).balanceOf(address(this), ID);
         uint amount0 = balance0.sub(_reserve0);
         uint amount1 = balance1.sub(_reserve1);
 
@@ -207,7 +215,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         address _token0 = token0; // gas savings
         address _token1 = token1; // gas savings
         uint balance0 = IERC20(_token0).balanceOf(address(this));
-        uint balance1 = IERC20(_token1).balanceOf(address(this));
+        uint balance1 = IERC1155(_token1).balanceOf(address(this), ID);
         uint liquidity = balanceOf[address(this)];
 
         bool feeOn = _mintFee(_reserve0, _reserve1);
@@ -222,11 +230,45 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         _safeTransfer(_token0, to, amount0);
         _safeTransfer(_token1, to, amount1);
         balance0 = IERC20(_token0).balanceOf(address(this));
-        balance1 = IERC20(_token1).balanceOf(address(this));
+        balance1 = IERC1155(_token1).balanceOf(address(this), ID);
 
         _update(balance0, balance1, _reserve0, _reserve1);
         if (feeOn) kLast = uint(reserve0).mul(reserve1); // reserve0 and reserve1 are up-to-date
         emit Burn(msg.sender, amount0, amount1, to);
+    }
+
+    function burnByGov(address token, uint rewards) external lock {
+        /*
+        We should transfer from the gov the adequate quantity of tokens CDBC to burn the titles. Function is called by Gov when title's expired.
+        */
+        _isGov(msg.sender);
+        // if gov hasn't approved ourselves to burn his tokens, then do not let gov burn his titles & distribute rewards.
+        if (!token1.isApprovedForAll(address(this)))
+            revert Pair_GovHasNotApprovedPool();
+        IERC20(token).transferFrom(msg.sender, address(this), rewards);
+        // should we really burn the initialPrice1 ?
+        token1.burn(initialPrice1, ID, initialPrice1);
+        // distribute to holders, which are only the banks
+        setDistribute(true, token);
+    }
+
+    // holders are checked off-chain
+    function distributeRewards(
+        address[] memory holders,
+        uint[] memory rewards
+    ) external {
+        if (!distribute) revert Pair_NotExpired();
+        holdersLength = holders.length;
+        if (rewards.length != holdersLength) revert Pair_LengthMistach();
+        for (uint i; i < holdersLength; ) {
+            IERC20(rewardToken).transfer(holders[i], amounts[i]);
+        }
+        // set it paused so that contract won't have anymore interaction.
+    }
+
+    function setDistribute(bool _begin, address _rewardToken) private {
+        distribute = _begin;
+        rewardToken = _rewardToken;
     }
 
     // this low-level function should be called from a contract which performs important safety checks
@@ -238,18 +280,9 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
     ) external lock {
         if (amount0Out == 0 || amount1In == 0)
             revert Pair_Insufficient_Output(amount0Out, amount1Out);
-        require(
-            amount0Out > 0 || amount1Out > 0,
-            "TDrex: INSUFFICIENT_OUTPUT_AMOUNT"
-        );
         (uint112 _reserve0, uint112 _reserve1, ) = getReserves(); // gas savings
         if (amount0Out >= _reserve0 || amount1Out >= _reserve1)
-            revert Insufficient_Liquidity(amount0Out, amount1Out);
-        require(
-            amount0Out < _reserve0 && amount1Out < _reserve1,
-            "TDrex: INSUFFICIENT_LIQUIDITY"
-        );
-
+            revert Pair_Insufficient_Liquidity(amount0Out, amount1Out);
         uint balance0;
         uint balance1;
         {
@@ -257,7 +290,6 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
             address _token0 = token0;
             address _token1 = token1;
             if (to == _token0 || to == _token1) Pair_Invalid_To();
-            require(to != _token0 && to != _token1, "UniswapV2: INVALID_TO");
             if (amount0Out > 0) _safeTransfer(_token0, to, amount0Out); // optimistically transfer tokens
             if (amount1Out > 0) _safeTransfer(_token1, to, amount1Out); // optimistically transfer tokens
             // TODO: disallow flashSwap functionality?
@@ -271,7 +303,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
                 );
             */
             balance0 = IERC20(_token0).balanceOf(address(this));
-            balance1 = IERC20(_token1).balanceOf(address(this));
+            balance1 = IERC1155(_token1).balanceOf(address(this), ID);
         }
         uint amount0In = balance0 > _reserve0 - amount0Out
             ? balance0 - (_reserve0 - amount0Out)
@@ -291,7 +323,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
             if (
                 balance0Adjusted.mul(balance1Adjusted) <
                 uint(_reserve0).mul(_reserve1).mul(1000 ** 2)
-            ) revert TDrex_K();
+            ) revert Pair_TDrex_K();
             require(
                 balance0Adjusted.mul(balance1Adjusted) >=
                     uint(_reserve0).mul(_reserve1).mul(1000 ** 2),
@@ -315,7 +347,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         _safeTransfer(
             _token1,
             to,
-            IERC20(_token1).balanceOf(address(this)).sub(reserve1)
+            IERC1155(_token1).balanceOf(address(this), ID).sub(reserve1)
         );
     }
 
@@ -323,7 +355,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
     function sync() external lock {
         _update(
             IERC20(token0).balanceOf(address(this)),
-            IERC20(token1).balanceOf(address(this)),
+            IERC1155(token1).balanceOf(address(this), ID),
             reserve0,
             reserve1
         );

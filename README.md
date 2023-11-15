@@ -14,9 +14,19 @@ We create pools.
 8. DONE: Only banks can addLiquidity and onlyGov can create the pair. Gov determines the amount of titles per amount of CDBCs, determining therefore the initial price of the titles. 
 9. bank/gov calls Router -> router get tokens from caller -> pool gets tokens from routers -> pool sends tokens to user. 
 10. When the title is expired: gov calls burn on pool -> pool calls burn itself on its tokens -> pool distributes it to LP holders -> pool also stays with what has not been swap. 
-11. Should I define 1155 as the token1, so that users exchange CDBCs per titles. They can also exchange token1 for token0, ofc. But instead of defining tokens per their numbers' sort, I define them per their ercType. This begins in factory. 
+11. DONE: Should I define 1155 as the token1, so that users exchange CDBCs per titles. They can also exchange token1 for token0, ofc. But instead of defining tokens per their numbers' sort, I define them per their ercType. 
+11. This begins in factory. 
 12. Pair could have pause function and this could be unpaused for swaps etc - only after liquidity has been added. Router would check whether the pair he is calling is paused or not.
 13. Substitute where there is token1 _safeTransfer for token1 _safeTransfer of 1155.
+14. Would it be easier to distribute the rewards to all holders and then selfdestruct the contract?
+15. In order to keep track, we can have a mapping (using OZ contracts), where when a transfer happens, we set the from to false and set the to to true, so that when the burning comes, we only neeed to go through the trues to burn from them.
+
+## Challenges
+1. Uniswap uses ERC20-like tokens to be the LP tokens - tokens that are given to the wallets that add liquidity to the pool. Therefore, we should probably do the same, overriding the `transfer` and `transferFrom` functions, approving ourselves to burn the tokens from whosoever receives them.
+2. When the day of the burning comes, the government calls the `burnByGov` function, therefore giving us tokens, so that we can burn the title and distribute the rewards given us.
+3. Is distributing rewards gonna be handled off-chain in the step of knowing which accounts have the token by scraping the block explorer or is it going to be handled on-chain? If on-chain, use EnumerableMap from OZ, address->uint, and add to the map each `to` and remove `from` if from's balance equals 0.
+4. Do AddLiquidity functions on Router permit someone to add a liquidity for one of the pairs? If not, do so and implement pause thing.
+5. Mint function in pair should mint 1:1 according to liquidity added. 
 
 ## Foundry
 
