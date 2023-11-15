@@ -9,9 +9,12 @@ contract TDrexFactory is ITDrexFactory {
     error Factory_PairExists;
     error Factory_IdenticalAddresses;
     error Factory_Forbidden;
+    error Factory_ZeroAmount;
 
     address public feeTo;
     address public feeToSetter;
+    // Brazil's Gov Account
+    address public govBR;
 
     mapping(address => mapping(address => address)) public getPair;
     address[] public allPairs;
@@ -26,12 +29,20 @@ contract TDrexFactory is ITDrexFactory {
     );
 
     // TODO: what's this fee for? Look at RareSkills
-    constructor(address _feeToSetter) public {
+    constructor(address _feeToSetter, address _govBR) public {
+        _isGov(msg.sender);
         feeToSetter = _feeToSetter;
+        govBR = _govBR;
     }
 
     function allPairsLength() external view returns (uint) {
         return allPairs.length;
+    }
+
+    /// @dev the creator of the pool
+    /// @param caller must be allowed bank
+    function _isGov(address caller) private {
+        if (caller != govBR) revert Factory_Forbidden();
     }
 
     function createPair(
@@ -40,15 +51,15 @@ contract TDrexFactory is ITDrexFactory {
         uint amount0,
         uint amount1
     ) external returns (address pair) {
+        _isGov(msg.sender);
         if (tokenA == tokenB) revert Factory_IdenticalAddresses();
-        require(tokenA != tokenB, "TDrex: IDENTICAL_ADDRESSES");
+        // price is 0
+        if (amount0 == 0 || amount1 == 0) revert Factory_ZeroAmount();
         (address token0, address token1) = tokenA < tokenB
             ? (tokenA, tokenB)
             : (tokenB, tokenA);
         if (token0 == address(0)) revert Factory_ZeroAddress();
-        require(token0 != address(0), "TDrex: ZERO_ADDRESS");
         if (getPair[token0][token1] != address(0)) revert Factory_PairExists();
-        require(getPair[token0][token1] == address(0), "TDrex: PAIR_EXISTS"); // single check is sufficient
         // TODO: check this line's working.
         bytes memory bytecode = type(TDrexPair).creationCode;
         // price is also used as a way to determine salt.
@@ -66,21 +77,19 @@ contract TDrexFactory is ITDrexFactory {
             token0,
             token1,
             pair,
-            amount0,
-            amount1,
+            amount0, // price of CDBC
+            amount1, // price of title
             allPairs.length
         );
     }
 
     function setFeeTo(address _feeTo) external {
         if (msg.sender != feeToSetter) Factory_Forbidden();
-        require(msg.sender == feeToSetter, "TDrex: FORBIDDEN");
         feeTo = _feeTo;
     }
 
     function setFeeToSetter(address _feeToSetter) external {
         if (msg.sender != feeToSetter) Factory_Forbidden();
-        require(msg.sender == feeToSetter, "TDrex: FORBIDDEN");
         feeToSetter = _feeToSetter;
     }
 }

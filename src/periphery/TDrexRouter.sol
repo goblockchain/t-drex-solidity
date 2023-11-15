@@ -25,8 +25,10 @@ contract TDrexRouter {
     using SafeMath for uint;
 
     address public immutable factory;
+    address public immutable govBr;
     // TODO: Check what's the wrapped token of the native of the Besu blockchain
     address public immutable WNative;
+    mapping(address => bool) entities;
 
     /*╔═════════════════════════════╗
       ║           ERRORS            ║
@@ -43,10 +45,13 @@ contract TDrexRouter {
     error Router_Excessive_Input_Amount(uint amountInMax);
     // invalid token, either as output or input.
     error Router_Invalid_Path(address token);
+    error Router_Forbidden;
+    error Router_PairUnexists;
 
-    constructor(address _factory, address _WNative) {
+    constructor(address _factory, address _govBr, address _WNative) {
         factory = _factory;
         WNative = _WNative;
+        govBr = _govBr;
     }
 
     receive() external payable {
@@ -54,19 +59,38 @@ contract TDrexRouter {
         assert(msg.sender == WNative); // only accept Native via fallback from the WNative contract.
     }
 
+    // TODO: perform a correct ordering of the functions.
+
+    /*╔═════════════════════════════╗
+      ║      CHECK FUNCTIONS        ║
+      ╚═════════════════════════════╝*/
+
+    function _isAllowed(address caller) private {
+        if (!entities[caller]) revert Router_Forbidden();
+    }
+
+    function _isGov(address caller) private {
+        if (caller != govBr) revert Router_Forbidden();
+    }
+
+    /*╔═════════════════════════════╗
+      ║        GOV FUNCTIONS        ║
+      ╚═════════════════════════════╝*/
+
+    function addEntity(address entity) public {
+        _isGov(msg.sender);
+        entities[entity] = true;
+    }
+
+    function removeEntity(address entity) public {
+        _isGov(msg.sender);
+        entities[entity] = false;
+    }
+
     /*╔═════════════════════════════╗
       ║        ADD LIQUIDITY        ║
       ╚═════════════════════════════╝*/
 
-    /// @notice This function adds liquidity to the pool of tokenA, tokenB. The pool though cannot receive an arbitrary number of tokens. Instead, the tokens added to the pool must maintain the pool's balance of equal token equal to a constant K when multiplied. Order of tokens does not matter, either can be A or B.
-    /// @param tokenA // tokenA
-    /// @param tokenB // tokenB
-    /// @param amountADesired amount of liquidity the token the caller wants to add.
-    /// @param amountBDesired amount of liquidity the token the caller wants to add.
-    /// @param amountAMin the min amount that the caller wants to be surely added as liquidity
-    /// @param amountBMin the min amount that the caller wants to be surely added as liquidity
-    /// @return amountA the amount of tokens of tokenA that were actually added as liquidity to the pool supplied by the caller.
-    /// @return amountB the amount of tokens of tokenB that were actually added as liquidity to the pool supplied by the caller.
     function _addLiquidity(
         address tokenA,
         address tokenB,
@@ -78,7 +102,7 @@ contract TDrexRouter {
         // create pair pool if it doesn't exist yet
         if (ITDrexFactory(factory).getPair(tokenA, tokenB) == address(0)) {
             // TODO: pair should have been created in the factory by government already, so erase this line, put a revert here I believe.
-            ITDrexFactory(factory).createPair(tokenA, tokenB);
+            revert Router_PairUnexists();
         }
 
         (uint reserveA, uint reserveB) = TDrexLibrary.getReserves(
@@ -117,15 +141,6 @@ contract TDrexRouter {
         }
     }
 
-    /// @notice
-    /// @param tokenA
-    /// @param tokenB
-    /// @param amountADesired
-    /// @param amountBDesired
-    /// @param amountAMin
-    /// @param amountBMin
-    /// @param to
-    /// @param deadline
     function addLiquidity(
         address tokenA,
         address tokenB,
@@ -142,6 +157,7 @@ contract TDrexRouter {
         returns (uint amountA, uint amountB, uint liquidity)
     {
         ensure(deadline);
+        _isAllowed(msg.sender);
         (amountA, amountB) = _addLiquidity(
             tokenA,
             tokenB,
@@ -158,16 +174,6 @@ contract TDrexRouter {
         liquidity = ITDrexPair(pair).mint(to);
     }
 
-    /// @notice this function is intented to add liquidity to a pool where one of the tokens is the native token of the blockchain.
-    /// @param token
-    /// @param amountTokenDesired
-    /// @param amountTokenMin
-    /// @param amountNativeMin
-    /// @param to
-    /// @param deadline
-    /// @return amountToken
-    /// @return amountNative
-    /// @return liquidity
     function addLiquidityNative(
         address token,
         uint amountTokenDesired,
@@ -183,6 +189,7 @@ contract TDrexRouter {
         returns (uint amountToken, uint amountNative, uint liquidity)
     {
         ensure(deadline);
+        _isAllowed(msg.sender);
         (amountToken, amountNative) = _addLiquidity(
             token,
             WNative,
@@ -220,6 +227,7 @@ contract TDrexRouter {
         uint deadline
     ) public virtual override returns (uint amountA, uint amountB) {
         ensure(deadline);
+        _isAllowed(msg.sender);
         address pair = TDrexLibrary.pairFor(factory, tokenA, tokenB);
         // LP tokens are sent to the pool, then burned in next line;remember the pair pool is also a token.
         ITDrexPair(pair).transferFrom(msg.sender, pair, liquidity);
@@ -246,6 +254,7 @@ contract TDrexRouter {
         uint deadline
     ) public virtual override returns (uint amountToken, uint amountNative) {
         ensure(deadline);
+        _isAllowed(msg.sender);
         (amountToken, amountNative) = removeLiquidity(
             token,
             WNative,
@@ -261,20 +270,6 @@ contract TDrexRouter {
         TransferHelper.safeTransferNative(to, amountNative);
     }
 
-    ///
-    /// @param tokenA
-    /// @param tokenB
-    /// @param liquidity
-    /// @param amountAMin
-    /// @param amountBMin
-    /// @param to
-    /// @param deadline
-    /// @param approveMax
-    /// @param v
-    /// @param r
-    /// @param s
-    /// @return amountA
-    /// @return amountB
     function removeLiquidityWithPermit(
         address tokenA,
         address tokenB,
@@ -310,19 +305,6 @@ contract TDrexRouter {
         );
     }
 
-    ///
-    /// @param token
-    /// @param liquidity
-    /// @param amountTokenMin
-    /// @param amountETHMin
-    /// @param to
-    /// @param deadline
-    /// @param approveMax
-    /// @param v
-    /// @param r
-    /// @param s
-    /// @return amountToken
-    /// @return amountETH
     function removeLiquidityNativeWithPermit(
         address token,
         uint liquidity,
@@ -365,13 +347,6 @@ contract TDrexRouter {
     //** In the real world, such tokens that support fee on transfer are: SafeMoon, FlokiInu, BabyDoge, Crypter */
     // NOTE: This use-case is interesting because government may actually want to add a fee on transfer of some token. So, we cover that.
 
-    ///
-    /// @param token
-    /// @param liquidity
-    /// @param amountTokenMin
-    /// @param amountETHMin
-    /// @param to
-    /// @param deadline
     function removeLiquidityNativeSupportingFeeOnTransferTokens(
         address token,
         uint liquidity,
@@ -399,17 +374,6 @@ contract TDrexRouter {
         TransferHelper.safeTransferNative(to, amountNative);
     }
 
-    ///
-    /// @param token
-    /// @param liquidity
-    /// @param amountTokenMin
-    /// @param amountETHMin
-    /// @param to
-    /// @param deadline
-    /// @param approveMax
-    /// @param v
-    /// @param r
-    /// @param s
     function removeLiquidityNativeWithPermitSupportingFeeOnTransferTokens(
         address token,
         uint liquidity,
@@ -448,10 +412,6 @@ contract TDrexRouter {
       ╚═════════════════════════════╝*/
     // requires the initial amount to have already been sent to the first pair
 
-    ///
-    /// @param amounts
-    /// @param path
-    /// @param _to
     function _swap(
         uint[] memory amounts,
         address[] memory path,
@@ -480,12 +440,6 @@ contract TDrexRouter {
         }
     }
 
-    ///
-    /// @param amountIn
-    /// @param amountOutMin
-    /// @param path
-    /// @param to
-    /// @param deadline
     function swapExactTokensForTokens(
         uint amountIn,
         uint amountOutMin,
@@ -506,12 +460,6 @@ contract TDrexRouter {
         _swap(amounts, path, to);
     }
 
-    ///
-    /// @param amountOut
-    /// @param amountInMax
-    /// @param path
-    /// @param to
-    /// @param deadline
     function swapTokensForExactTokens(
         uint amountOut,
         uint amountInMax,
@@ -532,11 +480,6 @@ contract TDrexRouter {
         _swap(amounts, path, to);
     }
 
-    ///
-    /// @param amountOutMin
-    /// @param path
-    /// @param to
-    /// @param deadline
     function swapExactNativeForTokens(
         uint amountOutMin,
         address[] calldata path,
@@ -558,12 +501,6 @@ contract TDrexRouter {
         _swap(amounts, path, to);
     }
 
-    ///
-    /// @param amountOut
-    /// @param amountInMax
-    /// @param path
-    /// @param to
-    /// @param deadline
     function swapTokensForExactNative(
         uint amountOut,
         uint amountInMax,
@@ -588,12 +525,6 @@ contract TDrexRouter {
         TransferHelper.safeTransferNative(to, amounts[amounts.length - 1]);
     }
 
-    ///
-    /// @param amountIn
-    /// @param amountOutMin
-    /// @param path
-    /// @param to
-    /// @param deadline
     function swapExactTokensForNative(
         uint amountIn,
         uint amountOutMin,
@@ -618,11 +549,6 @@ contract TDrexRouter {
         TransferHelper.safeTransferNative(to, amounts[amounts.length - 1]);
     }
 
-    ///
-    /// @param amountOut
-    /// @param path
-    /// @param to
-    /// @param deadline
     function swapNativeForExactTokens(
         uint amountOut,
         address[] calldata path,
@@ -655,9 +581,6 @@ contract TDrexRouter {
       ╚═════════════════════════════╝*/
     // requires the initial amount to have already been sent to the first pair
 
-    ///
-    /// @param path
-    /// @param _to
     function _swapSupportingFeeOnTransferTokens(
         address[] memory path,
         address _to
@@ -699,12 +622,6 @@ contract TDrexRouter {
         }
     }
 
-    ///
-    /// @param amountIn
-    /// @param amountOutMin
-    /// @param path
-    /// @param to
-    /// @param deadline
     function swapExactTokensForTokensSupportingFeeOnTransferTokens(
         uint amountIn,
         uint amountOutMin,
@@ -730,11 +647,6 @@ contract TDrexRouter {
         ) revert Router_Insufficient_OUTPUT_Amount(amountOutMin);
     }
 
-    ///
-    /// @param amountOutMin
-    /// @param path
-    /// @param to
-    /// @param deadline
     function swapExactNativeForTokensSupportingFeeOnTransferTokens(
         uint amountOutMin,
         address[] calldata path,
@@ -759,12 +671,6 @@ contract TDrexRouter {
         ) revert Router_Insufficient_OUTPUT_Amount(amountOutMin);
     }
 
-    ///
-    /// @param amountIn
-    /// @param amountOutMin
-    /// @param path
-    /// @param to
-    /// @param deadline
     function swapExactTokensForNativeSupportingFeeOnTransferTokens(
         uint amountIn,
         uint amountOutMin,
