@@ -77,6 +77,7 @@ contract TDrexRouter {
     ) internal virtual returns (uint amountA, uint amountB) {
         // create pair pool if it doesn't exist yet
         if (ITDrexFactory(factory).getPair(tokenA, tokenB) == address(0)) {
+            // TODO: pair should have been created in the factory by government already, so erase this line, put a revert here I believe.
             ITDrexFactory(factory).createPair(tokenA, tokenB);
         }
 
