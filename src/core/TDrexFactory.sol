@@ -1,5 +1,14 @@
 pragma solidity ^0.8.13;
 
+/**
+ * @title TDrexFactory
+ * @author TDrex team
+ * @notice Since this contract will be inside a permissioned EVM-compatible blockchain, we, therefore, decided to make some assumptions. NOTE that removing these assumptions make this contract to be vulnerable to be deployed in any EVM-compatible mainnet. The assumptions are below:
+ * 1. only Brazil's government will be able to create pools.
+ * 2. the pair to be created will always be composed of an ERC20-like contract and an ERC1155. This contract will always support the supportsInterface function as any of the most recent ERC20s do. This is key to determining the sorting of the tokens in the pool.
+ * 3. `amount1` and `amount0` will represent the initial price in between token0 and token1, where token0 is always an ERC20-like token and token1 is an ERC1155-like token.
+ */
+
 import "./interfaces/IUniswapV2Factory.sol";
 import "./UniswapV2Pair.sol";
 import "../../lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol";
@@ -73,7 +82,6 @@ contract TDrexFactory is ITDrexFactory {
         */
         if (token0 == address(0)) revert Factory_ZeroAddress();
         if (getPair[token0][token1] != address(0)) revert Factory_PairExists();
-        // TODO: check this line's working.
         bytes memory bytecode = type(TDrexPair).creationCode;
         // price is also used as a way to determine salt.
         bytes32 salt = keccak256(
