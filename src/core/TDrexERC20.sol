@@ -1,9 +1,9 @@
-pragma solidity =0.5.16;
+pragma solidity ^0.8.13;
 
-import "./interfaces/IUniswapV2ERC20.sol";
-import "./libraries/SafeMath.sol";
+// import "./interfaces/IUniswapV2ERC20.sol";
+import "../libraries/SafeMath.sol";
 
-contract TDrexERC20 is ITDrexERC20 {
+contract TDrexERC20 {
     using SafeMath for uint;
 
     string public constant name = "T-Drex";
@@ -25,7 +25,7 @@ contract TDrexERC20 is ITDrexERC20 {
     constructor() public {
         uint chainId;
         assembly {
-            chainId := chainid
+            chainId := chainid()
         }
         DOMAIN_SEPARATOR = keccak256(
             abi.encode(
@@ -78,7 +78,7 @@ contract TDrexERC20 is ITDrexERC20 {
         address to,
         uint value
     ) external returns (bool) {
-        if (allowance[from][msg.sender] != uint(-1)) {
+        if (allowance[from][msg.sender] != type(uint).max) {
             allowance[from][msg.sender] = allowance[from][msg.sender].sub(
                 value
             );

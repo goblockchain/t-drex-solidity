@@ -20,6 +20,13 @@ import "../interfaces/IERC20.sol";
 // INative
 import "../interfaces/INative.sol";
 
+/**
+ * @title TDrexRouter
+ * @author TDrex team
+ * @notice Since this contract will be inside a permissioned EVM-compatible blockchain, we, therefore, decided to make some assumptions. NOTE that removing these assumptions make this contract to be vulnerable to be deployed in any EVM-compatible mainnet. The assumptions are below:
+ * 1. The `tokenB` in addLiquidity/removeLiquidity will always be an ERC1155-like token, enforced by the back-end of the application.
+ * 2.
+ */
 contract TDrexRouter {
     // NOTE: No need to use SafeMath because of pragma > 0.8
     using SafeMath for uint;
@@ -94,17 +101,20 @@ contract TDrexRouter {
     function _addLiquidity(
         address tokenA,
         address tokenB,
+        uint id,
         uint amountADesired, // seems to be the
         uint amountBDesired, // seems to be the amount of liquidity the token the caller wants to add.
         uint amountAMin, // seems
         uint amountBMin // seems the min amount that the caller wants to be surely added as liquidity
     ) internal virtual returns (uint amountA, uint amountB) {
         // create pair pool if it doesn't exist yet
-        if (ITDrexFactory(factory).getPair(tokenA, tokenB) == address(0)) {
+        require(ERC1155(tokenB).supportsInterface("0xd9b67a26"));
+        if (ITDrexFactory(factory).getPair(tokenA, tokenB, id) == address(0)) {
             // TODO: pair should have been created in the factory by government already, so erase this line, put a revert here I believe.
             revert Router_PairUnexists();
         }
 
+        // TODO: get initial price instead of reserves...Then the sends must be adding the initialPrice or either token, if pair liquidity can be added in two steps.
         (uint reserveA, uint reserveB) = TDrexLibrary.getReserves(
             factory,
             tokenA,
@@ -144,6 +154,7 @@ contract TDrexRouter {
     function addLiquidity(
         address tokenA,
         address tokenB,
+        uint id,
         uint amountADesired,
         uint amountBDesired,
         uint amountAMin,
@@ -161,18 +172,21 @@ contract TDrexRouter {
         (amountA, amountB) = _addLiquidity(
             tokenA,
             tokenB,
+            id,
             amountADesired,
             amountBDesired,
             amountAMin,
             amountBMin
         );
-        address pair = TDrexLibrary.pairFor(factory, tokenA, tokenB);
+        address pair = TDrexLibrary.pairFor(factory, tokenA, tokenB, id);
         //TODO: check if isn't it better to use _msgSender() function here?
         TransferHelper.safeTransferFrom(tokenA, msg.sender, pair, amountA);
-        tokenB.safeTransferFrom(msg.sender, pair, amountB);
+        // TODO: add an ID in here, since token B must be always an ERC1155, enforced by the back-end.
+        tokenB.safeTransferFrom(msg.sender, pair, id, amountB, "0x");
         // TransferHelper.safeTransferFrom(tokenB, msg.sender, pair, amountB);
 
         //NOTE: This LP token minted when liquidity is added can be the representation of the titulo.
+        // TODO: if two step liquidity is supported, shall we give a different token for each added token of the pair? Im thinking this because of the burn phase - where we will burn the erc20/erc1155-like representation of the person who's added tokenB, but not tokenA, right?
         liquidity = ITDrexPair(pair).mint(to);
     }
 

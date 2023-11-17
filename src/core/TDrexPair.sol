@@ -1,37 +1,47 @@
 pragma solidity ^0.8.13;
 
-import "./interfaces/IUniswapV2Pair.sol";
+// import "./interfaces/IUniswapV2Pair.sol";
 // TODO: Substitute by an ERC1155
-import "./TDrexERC1155.sol";
+import "./TDrexERC20.sol";
 
-import "./libraries/Math.sol";
-import "./libraries/UQ112x112.sol";
-import "./interfaces/IERC20.sol";
-import "./interfaces/IUniswapV2Factory.sol";
-import "./interfaces/IUniswapV2Callee.sol";
+import "../libraries/Math.sol";
+import "../libraries/UQ112x122.sol";
+import "../interfaces/IERC20.sol";
+import "../interfaces/ITDrexFactory.sol";
+import "../interfaces/IERC1155Burnable.sol";
 
-contract TDrexPair is ITDrexPair, TDrexERC1155 {
+// import "./interfaces/IUniswapV2Callee.sol";
+
+/**
+ * @title TDrexPair
+ * @author TDrex team
+ * @notice Since this contract will be inside a permissioned EVM-compatible blockchain, we, therefore, decided to make some assumptions. NOTE that removing these assumptions make this contract to be vulnerable to be deployed in any EVM-compatible mainnet. The assumptions are below:
+ * 1.
+ */
+
+contract TDrexPair is TDrexERC20 {
     using SafeMath for uint;
     using UQ112x112 for uint224;
 
     // errors
-    error Pair_Forbidden;
+    error Pair_Forbidden();
     error Pair_Overflow(uint balance0, uint balance1);
-    error Pair_Insufficient_Minted;
+    error Pair_Insufficient_Minted();
     error Pair_Insufficient_Output(uint amount1, uint amount2);
     // here uint >= uint112 comparison is made.
     error Pair_Insufficient_Liquidity(uint amount1, uint amount2);
-    error Pair_Invalid_To;
-    error Pair_NotExpired;
-    error Pair_TDrex_K;
-    error Pair_GovHasNotApprovedPool;
+    error Pair_Invalid_To();
+    error Pair_NotExpired();
+    error Pair_TDrex_K();
+    error Pair_GovHasNotApprovedPool();
+    error Pair_LengthMistach(uint length1, uint length2);
 
     uint public constant MINIMUM_LIQUIDITY = 10 ** 3;
     // TODO: check whether the function's sig to be called for ERC1155 transfer is this one.
     bytes4 private constant SELECTOR =
         bytes4(keccak256(bytes("transfer(address,uint256)")));
 
-    address public factory;
+    ITDrexFactory public factory;
     address public token0;
     address public token1;
     address rewardToken;
@@ -100,7 +110,7 @@ contract TDrexPair is ITDrexPair, TDrexERC1155 {
     event Sync(uint112 reserve0, uint112 reserve1);
 
     constructor() public {
-        factory = msg.sender;
+        factory = ITDrexFactory(msg.sender);
     }
 
     // called once by the factory at time of deployment
@@ -111,7 +121,7 @@ contract TDrexPair is ITDrexPair, TDrexERC1155 {
         uint _amount1,
         uint _id
     ) external {
-        if (msg.sender != factory) revert Pair_Forbidden();
+        if (msg.sender != address(factory)) revert Pair_Forbidden();
 
         token0 = _token0;
         token1 = _token1;
@@ -237,31 +247,38 @@ contract TDrexPair is ITDrexPair, TDrexERC1155 {
         emit Burn(msg.sender, amount0, amount1, to);
     }
 
+    function _isGov(address account) internal pure {
+        if (account != factory.govBr()) revert Pair_Forbidden();
+    }
+
     function burnByGov(address token, uint rewards) external lock {
         /*
         We should transfer from the gov the adequate quantity of tokens CDBC to burn the titles. Function is called by Gov when title's expired.
         */
         _isGov(msg.sender);
         // if gov hasn't approved ourselves to burn his tokens, then do not let gov burn his titles & distribute rewards.
-        if (!token1.isApprovedForAll(address(this)))
+        if (!IERC1155(token1).isApprovedForAll(address(this), msg.sender))
             revert Pair_GovHasNotApprovedPool();
         IERC20(token).transferFrom(msg.sender, address(this), rewards);
         // should we really burn the initialPrice1 ?
-        token1.burn(initialPrice1, ID, initialPrice1);
+        // TODO: define from whom we'll burn here.
+        IERC1155Burnable(token1).burn(msg.sender, ID, initialPrice1);
         // distribute to holders, which are only the banks
         setDistribute(true, token);
     }
 
+    // TODO: test this well and well!
     // holders are checked off-chain
     function distributeRewards(
         address[] memory holders,
         uint[] memory rewards
     ) external {
         if (!distribute) revert Pair_NotExpired();
-        holdersLength = holders.length;
-        if (rewards.length != holdersLength) revert Pair_LengthMistach();
+        uint holdersLength = holders.length;
+        if (rewards.length != holdersLength)
+            revert Pair_LengthMistach(rewards.length, holdersLength);
         for (uint i; i < holdersLength; ) {
-            IERC20(rewardToken).transfer(holders[i], amounts[i]);
+            IERC20(rewardToken).transfer(holders[i], rewards[i]);
         }
         // set it paused so that contract won't have anymore interaction.
     }
@@ -278,7 +295,7 @@ contract TDrexPair is ITDrexPair, TDrexERC1155 {
         address to,
         bytes calldata data
     ) external lock {
-        if (amount0Out == 0 || amount1In == 0)
+        if (amount0Out == 0 || amount1Out == 0)
             revert Pair_Insufficient_Output(amount0Out, amount1Out);
         (uint112 _reserve0, uint112 _reserve1, ) = getReserves(); // gas savings
         if (amount0Out >= _reserve0 || amount1Out >= _reserve1)
