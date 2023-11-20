@@ -1461,6 +1461,50 @@
         }
       }
     },
+    "lib/openzeppelin-contracts/contracts/utils/introspection/ERC165Checker.sol": {
+      "lastModificationDate": 1700021895351,
+      "contentHash": "39cb7ad93657f9f444653cf94d6fc392",
+      "sourceName": "lib/openzeppelin-contracts/contracts/utils/introspection/ERC165Checker.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "viaIR": true,
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol"
+      ],
+      "versionRequirement": "^0.8.20",
+      "artifacts": {
+        "ERC165Checker": {
+          "0.8.21+commit.d9974bed.Linux.gcc": "ERC165Checker.sol/ERC165Checker.json"
+        }
+      }
+    },
     "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol": {
       "lastModificationDate": 1700021895351,
       "contentHash": "de0163561b417b800d01749cbbe2147e",
@@ -1707,8 +1751,8 @@
       }
     },
     "src/core/TDrexFactory.sol": {
-      "lastModificationDate": 1700507790892,
-      "contentHash": "f06461c7d127b55ab5164d51d93261c5",
+      "lastModificationDate": 1700511849392,
+      "contentHash": "148b086f2005caaf2d62ea4f36e3bacc",
       "sourceName": "src/core/TDrexFactory.sol",
       "solcConfig": {
         "settings": {
@@ -2380,8 +2424,8 @@
       }
     },
     "test/TDrexTest.t.sol": {
-      "lastModificationDate": 1700509317242,
-      "contentHash": "b45fce600f3507dc54002ff6d50b9a03",
+      "lastModificationDate": 1700511739502,
+      "contentHash": "9aaf53fcc452d28bcbdc005e0ac2d160",
       "sourceName": "test/TDrexTest.t.sol",
       "solcConfig": {
         "settings": {
@@ -2444,6 +2488,7 @@
         "lib/openzeppelin-contracts/contracts/utils/Context.sol",
         "lib/openzeppelin-contracts/contracts/utils/StorageSlot.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/ERC165.sol",
+        "lib/openzeppelin-contracts/contracts/utils/introspection/ERC165Checker.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
         "lib/openzeppelin-contracts/contracts/utils/math/Math.sol",
         "src/MockToken.sol",

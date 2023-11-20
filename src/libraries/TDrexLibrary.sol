@@ -30,10 +30,24 @@ library TDrexLibrary {
 
         // ERC20 InterfaceID == 0x36372b07
         // ERC1155 InterfaceID == 0xd9b67a26
-        if (IERC165(tokenA).supportsInterface(bytes4(bytes("0x36372b07")))) {
-            (tokenA, tokenB);
-        } else {
-            (tokenB, tokenA);
+        address token0;
+        address token1;
+        try IERC165(tokenA).supportsInterface(bytes4(0xd9b67a26)) returns (
+            bool yes
+        ) {
+            if (yes) {
+                // if tokenA is the IERC1155
+                token0 = tokenB;
+                token1 = tokenA;
+            } else {
+                // in case ERC20 is IERC165
+                token0 = tokenA;
+                token1 = tokenB;
+            }
+        } catch {
+            //in case tokenA is ERC20 without IERC165
+            token0 = tokenA;
+            token1 = tokenB;
         }
         if (token0 == address(0)) revert Library_Zero_Address();
     }

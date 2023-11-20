@@ -6,6 +6,7 @@ import {TDrexFactory} from "../src/core/TDrexFactory.sol";
 import {INative} from "../src/interfaces/INative.sol";
 import {IERC1155Receiver} from "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 import {mockERC1155Token, mockERC20Token} from "../src/MockToken.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 contract CounterTest is Test, IERC1155Receiver {
     TDrexFactory public factory;
@@ -21,9 +22,34 @@ contract CounterTest is Test, IERC1155Receiver {
         emit log_address(address(token1));
         token0 = new mockERC20Token();
         emit log_address(address(token0));
-        // assertEq(token1.supportsInterface(bytes4(bytes("0xd9b67a26"))), true);
-        // assertEq(token1.supportsInterface(bytes4(bytes("0x36372b07"))), true);
+        vm.expectRevert(); // below reverts because erc20 does not support ERC165.
+        assertEq(ERC165Checker.supportsERC165(address(token0)), false);
+        // below does not revert because erc1155 supports ERC165.
+        assertEq(ERC165Checker.supportsERC165(address(token1)), true);
+        assertEq(token1.supportsInterface(bytes4(0xd9b67a26)), true); // is IERC1155
+        assertEq(token1.supportsInterface(bytes4(0x36372b07)), false); // is IERC20
     }
+
+    function test_Factory() public {
+        factory.createPair(
+            address(token0),
+            address(token1),
+            token0.balanceOf(address(this)),
+            token1.balanceOf(address(this), ID),
+            ID
+        );
+        assertEq(
+            factory.getPair(address(token0), address(token1), ID),
+            address(0x4F7320eFd3776797cEaDEfECd606852b6Cc66AE1)
+        );
+        assertEq(factory.allPairsLength(), 1);
+    }
+
+    function test_supportsInterface() public {
+        assertEq(token1.supportsInterface(bytes4(0xd9b67a26)), true);
+    }
+
+    // IERC155Receiver functions
 
     function onERC1155Received(
         address operator,
@@ -63,20 +89,5 @@ contract CounterTest is Test, IERC1155Receiver {
                     "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"
                 )
             );
-    }
-
-    function test_Factory() public {
-        factory.createPair(
-            address(token0),
-            address(token1),
-            token0.balanceOf(address(this)),
-            token1.balanceOf(address(this), ID),
-            ID
-        );
-        assertEq(
-            factory.getPair(address(token0), address(token1), ID),
-            address(0)
-        );
-        assertEq(factory.allPairsLength(), 1);
     }
 }
