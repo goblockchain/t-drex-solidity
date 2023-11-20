@@ -1,3 +1,4 @@
+//SPDX-Licence: UNLICENSED
 pragma solidity ^0.8.13;
 
 /**
@@ -10,21 +11,22 @@ pragma solidity ^0.8.13;
  */
 
 import "../interfaces/ITDrexFactory.sol";
+import "../interfaces/ITDrexPair.sol";
 import "./TDrexPair.sol";
 import "../interfaces/IERC165.sol";
 
 contract TDrexFactory is ITDrexFactory {
-    // Errors
-    error Factory_ZeroAddress;
-    error Factory_PairExists;
-    error Factory_IdenticalAddresses;
-    error Factory_Forbidden;
-    error Factory_ZeroAmount;
+    // errors
+    error Factory_ZeroAddress();
+    error Factory_PairExists();
+    error Factory_IdenticalAddresses();
+    error Factory_Forbidden();
+    error Factory_ZeroAmount();
 
     address public feeTo;
     address public feeToSetter;
     // Brazil's Gov Account
-    address public govBR;
+    address public govBr;
 
     ///@dev token0 -> token1 -> id -> address
     mapping(address => mapping(address => mapping(uint => address)))
@@ -42,10 +44,10 @@ contract TDrexFactory is ITDrexFactory {
     );
 
     // TODO: what's this fee for? Look at RareSkills
-    constructor(address _feeToSetter, address _govBR) public {
+    constructor(address _feeToSetter, address _govBR) {
         _isGov(msg.sender);
         feeToSetter = _feeToSetter;
-        govBR = _govBR;
+        govBr = _govBR;
     }
 
     function allPairsLength() external view returns (uint) {
@@ -55,7 +57,7 @@ contract TDrexFactory is ITDrexFactory {
     /// @dev the creator of the pool
     /// @param caller must be allowed bank
     function _isGov(address caller) private {
-        if (caller != govBR) revert Factory_Forbidden();
+        if (caller != govBr) revert Factory_Forbidden();
     }
 
     function createPair(
@@ -73,7 +75,7 @@ contract TDrexFactory is ITDrexFactory {
         // ERC20 InterfaceID == 0x36372b07
         // ERC1155 InterfaceID == 0xd9b67a26
         (address token0, address token1) = IERC165(tokenA).supportsInterface(
-            "0x36372b07"
+            bytes4(bytes("0x36372b07"))
         )
             ? (tokenA, tokenB)
             : (tokenB, tokenA);
@@ -101,8 +103,8 @@ contract TDrexFactory is ITDrexFactory {
         emit PairCreated(
             token0,
             token1,
-            id,
             pair,
+            id,
             amount0, // price of CDBC
             amount1, // price of title
             allPairs.length
@@ -110,12 +112,12 @@ contract TDrexFactory is ITDrexFactory {
     }
 
     function setFeeTo(address _feeTo) external {
-        if (msg.sender != feeToSetter) Factory_Forbidden();
+        if (msg.sender != feeToSetter) revert Factory_Forbidden();
         feeTo = _feeTo;
     }
 
     function setFeeToSetter(address _feeToSetter) external {
-        if (msg.sender != feeToSetter) Factory_Forbidden();
+        if (msg.sender != feeToSetter) revert Factory_Forbidden();
         feeToSetter = _feeToSetter;
     }
 }

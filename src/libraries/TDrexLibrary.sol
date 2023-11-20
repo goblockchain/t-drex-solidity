@@ -5,8 +5,9 @@ pragma solidity ^0.8.13;
 // import "";
 import "./SafeMath.sol";
 import "../../lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol";
+import "../interfaces/ITDrexPair.sol";
 
-library UniswapV2Library {
+library TDrexLibrary {
     using SafeMath for uint;
 
     /*╔═════════════════════════════╗
@@ -24,12 +25,12 @@ library UniswapV2Library {
     function sortTokens(
         address tokenA,
         address tokenB
-    ) internal pure returns (address token0, address token1) {
+    ) internal view returns (address token0, address token1) {
         if (tokenA == tokenB) revert Library_Identical_Addresses(tokenA);
 
         // ERC20 InterfaceID == 0x36372b07
         // ERC1155 InterfaceID == 0xd9b67a26
-        if (IERC165(tokenA).supportsInterface("0x36372b07")) {
+        if (IERC165(tokenA).supportsInterface(bytes4(bytes("0x36372b07")))) {
             (tokenA, tokenB);
         } else {
             (tokenB, tokenA);
@@ -43,22 +44,23 @@ library UniswapV2Library {
         address tokenA,
         address tokenB,
         uint id
-    ) internal pure returns (address pair) {
+    ) internal view returns (address pair) {
         (address token0, address token1) = sortTokens(tokenA, tokenB);
 
         // NOTE: pair pool contract address is deterministic accross TDREX.
-        pair = address(
-            uint(
-                keccak256(
-                    abi.encodePacked(
-                        hex"ff",
-                        factory,
-                        keccak256(abi.encodePacked(token0, token1, id)),
-                        hex"96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f" // init code hash
-                    )
-                )
+        bytes32 hash = keccak256(
+            abi.encodePacked(
+                hex"ff",
+                factory,
+                keccak256(abi.encodePacked(token0, token1, id)),
+                hex"96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f" // init code hash
             )
         );
+
+        // zeros out the 256 (bytes32) - 160 (address) = 96 bits that are not the address.
+        assembly {
+            pair := and(hash, 0xffffffffffffffffffffffffffffffffffffff)
+        }
     }
 
     // fetches and sorts the reserves for a pair
@@ -125,7 +127,8 @@ library UniswapV2Library {
     function getAmountsOut(
         address factory,
         uint amountIn,
-        address[] memory path
+        address[] memory path,
+        uint id
     ) internal view returns (uint[] memory amounts) {
         uint pathLength = path.length;
         if (pathLength < 2) revert Library_Invalid_Path(pathLength);
@@ -135,7 +138,8 @@ library UniswapV2Library {
             (uint reserveIn, uint reserveOut) = getReserves(
                 factory,
                 path[i],
-                path[i + 1]
+                path[i + 1],
+                id
             );
             amounts[i + 1] = getAmountOut(amounts[i], reserveIn, reserveOut);
             unchecked {
@@ -148,7 +152,8 @@ library UniswapV2Library {
     function getAmountsIn(
         address factory,
         uint amountOut,
-        address[] memory path
+        address[] memory path,
+        uint id
     ) internal view returns (uint[] memory amounts) {
         uint pathLength = path.length;
         if (pathLength < 2) revert Library_Invalid_Path(pathLength);
@@ -158,7 +163,8 @@ library UniswapV2Library {
             (uint reserveIn, uint reserveOut) = getReserves(
                 factory,
                 path[i - 1],
-                path[i]
+                path[i],
+                id
             );
             amounts[i - 1] = getAmountIn(amounts[i], reserveIn, reserveOut);
             unchecked {

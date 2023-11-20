@@ -247,7 +247,7 @@ contract TDrexPair is TDrexERC20 {
         emit Burn(msg.sender, amount0, amount1, to);
     }
 
-    function _isGov(address account) internal pure {
+    function _isGov(address account) internal view {
         if (account != factory.govBr()) revert Pair_Forbidden();
     }
 
@@ -306,7 +306,7 @@ contract TDrexPair is TDrexERC20 {
             // scope for _token{0,1}, avoids stack too deep errors
             address _token0 = token0;
             address _token1 = token1;
-            if (to == _token0 || to == _token1) Pair_Invalid_To();
+            if (to == _token0 || to == _token1) revert Pair_Invalid_To();
             if (amount0Out > 0) _safeTransfer(_token0, to, amount0Out); // optimistically transfer tokens
             if (amount1Out > 0) _safeTransfer(_token1, to, amount1Out); // optimistically transfer tokens
             // TODO: disallow flashSwap functionality?
