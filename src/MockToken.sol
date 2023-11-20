@@ -14,7 +14,10 @@ contract mockERC1155Token is ERC1155("mockURI") {
 }
 
 contract mockERC20Token is ERC20("mockToken0", "T0") {
+    event Log(address from);
+
     constructor() {
+        emit Log(msg.sender);
         _mint(msg.sender, 10 ether);
     }
 

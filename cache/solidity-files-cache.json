@@ -1603,8 +1603,8 @@
       }
     },
     "src/MockToken.sol": {
-      "lastModificationDate": 1700501541422,
-      "contentHash": "a5db948161cd2092498ad0bc5dbba581",
+      "lastModificationDate": 1700508428772,
+      "contentHash": "975c34f14df7ac49a059f9e58398ca01",
       "sourceName": "src/MockToken.sol",
       "solcConfig": {
         "settings": {
@@ -1707,8 +1707,8 @@
       }
     },
     "src/core/TDrexFactory.sol": {
-      "lastModificationDate": 1700506739292,
-      "contentHash": "ac645735728120d83313b29cd20a7f57",
+      "lastModificationDate": 1700507790892,
+      "contentHash": "f06461c7d127b55ab5164d51d93261c5",
       "sourceName": "src/core/TDrexFactory.sol",
       "solcConfig": {
         "settings": {
@@ -2380,8 +2380,8 @@
       }
     },
     "test/TDrexTest.t.sol": {
-      "lastModificationDate": 1700507002972,
-      "contentHash": "747fc5842a64392731f7d5e8df7c269c",
+      "lastModificationDate": 1700509317242,
+      "contentHash": "b45fce600f3507dc54002ff6d50b9a03",
       "sourceName": "test/TDrexTest.t.sol",
       "solcConfig": {
         "settings": {

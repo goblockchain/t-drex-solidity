@@ -45,7 +45,6 @@ contract TDrexFactory is ITDrexFactory {
 
     // TODO: what's this fee for? Look at RareSkills
     constructor(address _feeToSetter, address _govBR) {
-        _isGov(msg.sender);
         feeToSetter = _feeToSetter;
         govBr = _govBR;
     }
