@@ -30,8 +30,6 @@ library TDrexLibrary {
 
         // ERC20 InterfaceID == 0x36372b07
         // ERC1155 InterfaceID == 0xd9b67a26
-        address token0;
-        address token1;
         try IERC165(tokenA).supportsInterface(bytes4(0xd9b67a26)) returns (
             bool yes
         ) {
