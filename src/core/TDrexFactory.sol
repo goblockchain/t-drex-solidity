@@ -59,6 +59,12 @@ contract TDrexFactory is ITDrexFactory {
         if (caller != govBr) revert Factory_Forbidden();
     }
 
+    /// @notice it creates the contract holding the pair of tokens.
+    /// @param tokenA token in the pool.
+    /// @param tokenB token in the pool.
+    /// @param amount0 initialPrice of token. It's not deterministic for the pair address creation.
+    /// @param amount1 initialPrice of token. It's not deterministic for the pair address creation.
+    /// @param id id of ERC1155 in the pool.
     function createPair(
         address tokenA,
         address tokenB,
@@ -99,14 +105,13 @@ contract TDrexFactory is ITDrexFactory {
             ? (tokenA, tokenB)
             : (tokenB, tokenA);
         */
-        if (token0 == address(0)) revert Factory_ZeroAddress();
+        if (token0 == address(0) || token1 == address(0))
+            revert Factory_ZeroAddress();
         if (getPair[token0][token1][id] != address(0))
             revert Factory_PairExists();
         bytes memory bytecode = type(TDrexPair).creationCode;
         // price is also used as a way to determine salt.
-        bytes32 salt = keccak256(
-            abi.encodePacked(token0, token1, amount0, amount1, id)
-        );
+        bytes32 salt = keccak256(abi.encodePacked(token0, token1, id));
         assembly {
             pair := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }

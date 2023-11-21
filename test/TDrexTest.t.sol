@@ -4,14 +4,20 @@ pragma solidity ^0.8.13;
 import {Test, console2} from "forge-std/Test.sol";
 import {TDrexFactory} from "../src/core/TDrexFactory.sol";
 import {INative} from "../src/interfaces/INative.sol";
+import {NATIVE} from "../src/core/Native.sol";
 import {IERC1155Receiver} from "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
+import {TDrexRouter} from "../src/periphery/TDrexRouter.sol";
 import {mockERC1155Token, mockERC20Token} from "../src/MockToken.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {TDrexLibrary} from "../src/libraries/TDrexLibrary.sol";
+import {TDrexPair} from "../src/core/TDrexPair.sol";
 
 contract CounterTest is Test, IERC1155Receiver {
+    TDrexPair pair;
+    TDrexRouter router;
     TDrexFactory public factory;
-    INative public WNATIVE;
-    address govBr = address(this);
+    NATIVE public native;
+    // address govBr = address(this);
     mockERC1155Token token1;
     mockERC20Token token0;
     uint constant ID = 12345;
@@ -19,31 +25,86 @@ contract CounterTest is Test, IERC1155Receiver {
     function setUp() public {
         factory = new TDrexFactory(address(this), address(this));
         token1 = new mockERC1155Token();
-        emit log_address(address(token1));
         token0 = new mockERC20Token();
-        emit log_address(address(token0));
-        vm.expectRevert(); // below reverts because erc20 does not support ERC165.
+        native = new NATIVE();
+        router = new TDrexRouter(
+            address(factory),
+            address(this),
+            address(native)
+        );
+
+        vm.expectRevert();
+        // below reverts because erc20 does not support ERC165.
         assertEq(ERC165Checker.supportsERC165(address(token0)), false);
+
         // below does not revert because erc1155 supports ERC165.
         assertEq(ERC165Checker.supportsERC165(address(token1)), true);
         assertEq(token1.supportsInterface(bytes4(0xd9b67a26)), true); // is IERC1155
         assertEq(token1.supportsInterface(bytes4(0x36372b07)), false); // is IERC20
-    }
 
-    function test_Factory() public {
-        factory.createPair(
-            address(token0),
-            address(token1),
-            token0.balanceOf(address(this)),
-            token1.balanceOf(address(this), ID),
-            ID
+        /*╔═════════════════════════════╗
+          ║   MOCK PAIR USED IN TESTS   ║
+          ╚═════════════════════════════╝*/
+
+        pair = TDrexPair(
+            factory.createPair(
+                address(token0),
+                address(token1),
+                token0.balanceOf(address(this)),
+                token1.balanceOf(address(this), ID),
+                ID
+            )
         );
+        // address below is deterministic because of the CREATE2 opcode.
         assertEq(
             factory.getPair(address(token0), address(token1), ID),
-            address(0x4F7320eFd3776797cEaDEfECd606852b6Cc66AE1)
+            address(0x96507cb9B4763D5E14A20F7C65A1cF948E115C92)
         );
         assertEq(factory.allPairsLength(), 1);
     }
+
+    function test_Factory() public {}
+
+    function test_Library() public {
+        // TODO: why is `pairFor()` address different than the `factory.getPair` address? Solve the difference.
+        assertEq(
+            TDrexLibrary.pairFor(
+                address(factory),
+                address(token1),
+                address(token0),
+                ID
+            ),
+            0x007b6033308fCdCE2699423a24d4Ebf7df915cC5
+        );
+
+        // sort works despite order given.
+        (address tokenA, address tokenB) = TDrexLibrary.sortTokens(
+            address(token1),
+            address(token0)
+        );
+        (address reverseTokenA, address reverseTokenB) = TDrexLibrary
+            .sortTokens(address(token0), address(token1));
+        assert(tokenA == reverseTokenA);
+        assert(tokenB == reverseTokenB);
+
+        address pairFromFactory = factory.getPair(
+            address(token0),
+            address(token1),
+            ID
+        );
+        address pairFromLib = TDrexLibrary.pairFor(
+            address(factory),
+            address(token0),
+            address(token1),
+            ID
+        );
+
+        emit log_address(pairFromFactory);
+        emit log_address(pairFromLib);
+    }
+
+    // NOTE: this will change as the TDrexPair contract changes. Replace new value in TDrexLibrary when TDrexPair is changed.
+    function test_addRouter() public {}
 
     function test_supportsInterface() public {
         assertEq(token1.supportsInterface(bytes4(0xd9b67a26)), true);

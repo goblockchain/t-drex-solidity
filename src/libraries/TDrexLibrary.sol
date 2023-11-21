@@ -6,6 +6,8 @@ pragma solidity ^0.8.13;
 import "./SafeMath.sol";
 import "../../lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol";
 import "../interfaces/ITDrexPair.sol";
+import "../../lib/forge-std/src/console.sol";
+import "../core/TDrexPair.sol";
 
 library TDrexLibrary {
     using SafeMath for uint;
@@ -21,7 +23,6 @@ library TDrexLibrary {
     error Library_Insufficient_OUTPUT_Amount(uint amount);
     error Library_Invalid_Path(uint invalidPathLength);
 
-    // returns sorted token addresses, used to handle return values from pairs sorted in this order
     function sortTokens(
         address tokenA,
         address tokenB
@@ -62,14 +63,21 @@ library TDrexLibrary {
         // NOTE: pair pool contract address is deterministic accross TDREX.
         bytes32 hash = keccak256(
             abi.encodePacked(
-                hex"ff",
-                factory,
-                keccak256(abi.encodePacked(token0, token1, id)),
-                hex"96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f" // init code hash
+                bytes1(0xff), // "0xff"
+                factory, // who has deployed the contract.
+                keccak256(abi.encodePacked(token0, token1, id)), // salt
+                keccak256(
+                    abi.encodePacked(
+                        (type(TDrexPair).creationCode),
+                        token0,
+                        token1
+                    )
+                )
             )
         );
 
         // zeros out the 256 (bytes32) - 160 (address) = 96 bits that are not the address.
+        console.logBytes32(hash);
         assembly {
             pair := and(hash, 0xffffffffffffffffffffffffffffffffffffff)
         }

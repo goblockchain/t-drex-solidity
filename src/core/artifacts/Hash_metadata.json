@@ -1,0 +1,59 @@
+{
+	"compiler": {
+		"version": "0.8.22+commit.4fc1097e"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "hash",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"src/core/Hash.sol": "Hash"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"src/core/Hash.sol": {
+			"keccak256": "0x7bb67f9880fd341f452bf87d715d6ceef38d4d588b35e13133d31a7cb6c1e59c",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e9e7a969f3c5189bb39d5b2c511528e4a0660e76d2e26aca486277bf421f18f0",
+				"dweb:/ipfs/QmeCJcgJNqVMk6S3cmGuroePppdQohhgzD8n8oRDp9NJJi"
+			]
+		}
+	},
+	"version": 1
+}

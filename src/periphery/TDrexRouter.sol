@@ -21,7 +21,7 @@ import "../interfaces/IERC20.sol";
 import "../interfaces/INative.sol";
 
 // IERC1155
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+// import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 /**
  * @title TDrexRouter
@@ -111,10 +111,11 @@ contract TDrexRouter {
         uint amountBMin // seems the min amount that the caller wants to be surely added as liquidity
     ) internal virtual returns (uint amountA, uint amountB) {
         // create pair pool if it doesn't exist yet
-        require(
-            IERC1155(tokenB).supportsInterface(bytes4(bytes(("0xd9b67a26"))))
+        (address token0, address token1) = TDrexLibrary.sortTokens(
+            tokenA,
+            tokenB
         );
-        if (ITDrexFactory(factory).getPair(tokenA, tokenB, id) == address(0)) {
+        if (ITDrexFactory(factory).getPair(token0, token1, id) == address(0)) {
             // TODO: pair should have been created in the factory by government already, so erase this line, put a revert here I believe.
             revert Router_PairUnexists();
         }
@@ -122,8 +123,8 @@ contract TDrexRouter {
         // TODO: get initial price instead of reserves...Then the sends must be adding the initialPrice or either token, if pair liquidity can be added in two steps.
         (uint reserveA, uint reserveB) = TDrexLibrary.getReserves(
             factory,
-            tokenA,
-            tokenB,
+            token0,
+            token1,
             id
         );
 

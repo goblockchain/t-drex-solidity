@@ -1706,6 +1706,48 @@
         }
       }
     },
+    "src/core/Native.sol": {
+      "lastModificationDate": 1700514085292,
+      "contentHash": "cf4c801b38a8099eed19341f3262c0d1",
+      "sourceName": "src/core/Native.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "viaIR": true,
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.13",
+      "artifacts": {
+        "NATIVE": {
+          "0.8.21+commit.d9974bed.Linux.gcc": "Native.sol/NATIVE.json"
+        }
+      }
+    },
     "src/core/TDrexERC20.sol": {
       "lastModificationDate": 1700501543222,
       "contentHash": "ae855552c3206681a9439b07ef48c843",
@@ -1751,8 +1793,8 @@
       }
     },
     "src/core/TDrexFactory.sol": {
-      "lastModificationDate": 1700511849392,
-      "contentHash": "148b086f2005caaf2d62ea4f36e3bacc",
+      "lastModificationDate": 1700515523922,
+      "contentHash": "c289e0e265b9937348a1e0a276267b4d",
       "sourceName": "src/core/TDrexFactory.sol",
       "solcConfig": {
         "settings": {
@@ -2240,8 +2282,8 @@
       }
     },
     "src/libraries/TDrexLibrary.sol": {
-      "lastModificationDate": 1700506161102,
-      "contentHash": "1ef3408e01d3d49eeae6ccc5ed05477e",
+      "lastModificationDate": 1700532933142,
+      "contentHash": "7941307878dfaf994f39a57e12e5fa7e",
       "sourceName": "src/libraries/TDrexLibrary.sol",
       "solcConfig": {
         "settings": {
@@ -2274,10 +2316,20 @@
         }
       },
       "imports": [
+        "lib/forge-std/src/console.sol",
         "lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
+        "src/core/TDrexERC20.sol",
+        "src/core/TDrexPair.sol",
+        "src/interfaces/IERC1155.sol",
+        "src/interfaces/IERC1155Burnable.sol",
+        "src/interfaces/IERC165.sol",
+        "src/interfaces/IERC20.sol",
+        "src/interfaces/ITDrexFactory.sol",
         "src/interfaces/ITDrexPair.sol",
-        "src/libraries/SafeMath.sol"
+        "src/libraries/Math.sol",
+        "src/libraries/SafeMath.sol",
+        "src/libraries/UQ112x122.sol"
       ],
       "versionRequirement": "^0.8.13",
       "artifacts": {
@@ -2371,8 +2423,8 @@
       }
     },
     "src/periphery/TDrexRouter.sol": {
-      "lastModificationDate": 1700506226542,
-      "contentHash": "18490cae62044fc4551c684172a09271",
+      "lastModificationDate": 1700532473042,
+      "contentHash": "1268c5653dc2672921a4db939008c781",
       "sourceName": "src/periphery/TDrexRouter.sol",
       "solcConfig": {
         "settings": {
@@ -2405,16 +2457,23 @@
         }
       },
       "imports": [
+        "lib/forge-std/src/console.sol",
         "lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
-        "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
+        "src/core/TDrexERC20.sol",
+        "src/core/TDrexPair.sol",
+        "src/interfaces/IERC1155.sol",
+        "src/interfaces/IERC1155Burnable.sol",
+        "src/interfaces/IERC165.sol",
         "src/interfaces/IERC20.sol",
         "src/interfaces/INative.sol",
         "src/interfaces/ITDrexFactory.sol",
         "src/interfaces/ITDrexPair.sol",
+        "src/libraries/Math.sol",
         "src/libraries/SafeMath.sol",
         "src/libraries/TDrexLibrary.sol",
-        "src/libraries/TransferHelper.sol"
+        "src/libraries/TransferHelper.sol",
+        "src/libraries/UQ112x122.sol"
       ],
       "versionRequirement": "^0.8.13",
       "artifacts": {
@@ -2424,8 +2483,8 @@
       }
     },
     "test/TDrexTest.t.sol": {
-      "lastModificationDate": 1700511739502,
-      "contentHash": "9aaf53fcc452d28bcbdc005e0ac2d160",
+      "lastModificationDate": 1700532675072,
+      "contentHash": "1e8da5b07cfa4a8e9f59ac9218c22e90",
       "sourceName": "test/TDrexTest.t.sol",
       "solcConfig": {
         "settings": {
@@ -2476,6 +2535,7 @@
         "lib/forge-std/src/console2.sol",
         "lib/forge-std/src/interfaces/IMulticall3.sol",
         "lib/forge-std/src/safeconsole.sol",
+        "lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
         "lib/openzeppelin-contracts/contracts/interfaces/draft-IERC6093.sol",
         "lib/openzeppelin-contracts/contracts/token/ERC1155/ERC1155.sol",
         "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol",
@@ -2492,6 +2552,7 @@
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
         "lib/openzeppelin-contracts/contracts/utils/math/Math.sol",
         "src/MockToken.sol",
+        "src/core/Native.sol",
         "src/core/TDrexERC20.sol",
         "src/core/TDrexFactory.sol",
         "src/core/TDrexPair.sol",
@@ -2504,7 +2565,10 @@
         "src/interfaces/ITDrexPair.sol",
         "src/libraries/Math.sol",
         "src/libraries/SafeMath.sol",
-        "src/libraries/UQ112x122.sol"
+        "src/libraries/TDrexLibrary.sol",
+        "src/libraries/TransferHelper.sol",
+        "src/libraries/UQ112x122.sol",
+        "src/periphery/TDrexRouter.sol"
       ],
       "versionRequirement": "^0.8.13",
       "artifacts": {
