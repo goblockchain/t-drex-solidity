@@ -2282,8 +2282,8 @@
       }
     },
     "src/libraries/TDrexLibrary.sol": {
-      "lastModificationDate": 1700532933142,
-      "contentHash": "7941307878dfaf994f39a57e12e5fa7e",
+      "lastModificationDate": 1700534155222,
+      "contentHash": "793e1a8777a24ad9e6e7a85fd482f055",
       "sourceName": "src/libraries/TDrexLibrary.sol",
       "solcConfig": {
         "settings": {
@@ -2316,7 +2316,6 @@
         }
       },
       "imports": [
-        "lib/forge-std/src/console.sol",
         "lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
         "src/core/TDrexERC20.sol",
@@ -2457,7 +2456,6 @@
         }
       },
       "imports": [
-        "lib/forge-std/src/console.sol",
         "lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
         "src/core/TDrexERC20.sol",
@@ -2483,8 +2481,8 @@
       }
     },
     "test/TDrexTest.t.sol": {
-      "lastModificationDate": 1700532675072,
-      "contentHash": "1e8da5b07cfa4a8e9f59ac9218c22e90",
+      "lastModificationDate": 1700534344432,
+      "contentHash": "8291895407b8d65bebc8f521192db196",
       "sourceName": "test/TDrexTest.t.sol",
       "solcConfig": {
         "settings": {

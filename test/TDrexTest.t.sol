@@ -66,7 +66,9 @@ contract CounterTest is Test, IERC1155Receiver {
     function test_Factory() public {}
 
     function test_Library() public {
-        // TODO: why is `pairFor()` address different than the `factory.getPair` address? Solve the difference.
+        // NOTE: Library reverts if pair doesn't exist, as government will be the only one able to create a pair.
+
+        // `pairFor` and `getPair` should return the same address.
         assertEq(
             TDrexLibrary.pairFor(
                 address(factory),
@@ -74,7 +76,7 @@ contract CounterTest is Test, IERC1155Receiver {
                 address(token0),
                 ID
             ),
-            0x007b6033308fCdCE2699423a24d4Ebf7df915cC5
+            factory.getPair(address(token0), address(token1), ID)
         );
 
         // sort works despite order given.
@@ -86,24 +88,8 @@ contract CounterTest is Test, IERC1155Receiver {
             .sortTokens(address(token0), address(token1));
         assert(tokenA == reverseTokenA);
         assert(tokenB == reverseTokenB);
-
-        address pairFromFactory = factory.getPair(
-            address(token0),
-            address(token1),
-            ID
-        );
-        address pairFromLib = TDrexLibrary.pairFor(
-            address(factory),
-            address(token0),
-            address(token1),
-            ID
-        );
-
-        emit log_address(pairFromFactory);
-        emit log_address(pairFromLib);
     }
 
-    // NOTE: this will change as the TDrexPair contract changes. Replace new value in TDrexLibrary when TDrexPair is changed.
     function test_addRouter() public {}
 
     function test_supportsInterface() public {
@@ -131,7 +117,7 @@ contract CounterTest is Test, IERC1155Receiver {
 
     function supportsInterface(
         bytes4 interfaceId
-    ) external view returns (bool) {
+    ) external pure returns (bool) {
         if (interfaceId == bytes4(bytes("0xd9b67a26"))) return true;
         return false;
     }
