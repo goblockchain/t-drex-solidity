@@ -88,6 +88,20 @@ contract CounterTest is Test, IERC1155Receiver {
             .sortTokens(address(token0), address(token1));
         assert(tokenA == reverseTokenA);
         assert(tokenB == reverseTokenB);
+
+        /**
+         * amountA == 1 ether, reserveA = 10 ether, reserveB = 10 ether, so:
+         * amountB = amountA * reserveB / reserveB
+         * amountB = 1 ether * 10 ether / 10 ether = 1 ether.
+         */
+        assertEq(
+            TDrexLibrary.quote(
+                1 ether,
+                token0.totalSupply(),
+                token1.balanceOf(address(this), ID)
+            ),
+            1 ether
+        );
     }
 
     function test_addRouter() public {}
