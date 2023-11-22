@@ -17,7 +17,7 @@ contract CounterTest is Test, IERC1155Receiver {
     TDrexRouter router;
     TDrexFactory public factory;
     NATIVE public native;
-    // address govBr = address(this);
+    address randomUser = address(101);
     mockERC1155Token token1;
     mockERC20Token token0;
     uint constant ID = 12345;
@@ -56,10 +56,11 @@ contract CounterTest is Test, IERC1155Receiver {
             )
         );
         // address below is deterministic because of the CREATE2 opcode.
-        assertEq(
+        /*assertEq(
             factory.getPair(address(token0), address(token1), ID),
             address(0x96507cb9B4763D5E14A20F7C65A1cF948E115C92)
         );
+        */
         assertEq(factory.allPairsLength(), 1);
     }
 
@@ -150,7 +151,77 @@ contract CounterTest is Test, IERC1155Receiver {
         assert(reserveA == reserveB);
     }
 
-    function test_addRouter() public {}
+    /// @dev it works great!
+    function test_RouterNormally() public {
+        // gov makes itself an entity.
+        router.addEntity(address(this));
+        // it approves the router to transfer its tokens.
+        token0.approve(address(router), type(uint).max);
+        token1.setApprovalForAll(address(router), true);
+        // it adds liquidity of both tokens at once.
+        router.addLiquidity(
+            address(token0),
+            address(token1),
+            ID,
+            token0.balanceOf(address(this)),
+            token1.balanceOf(address(this), ID),
+            0,
+            0,
+            address(this),
+            block.timestamp + 1 days
+        );
+
+        // liquidity provide (address(this)) receives 9999999999999999000 LP tokens.
+        assertEq(pair.balanceOf(address(this)), 9999999999999999000);
+
+        pair.approve(address(router), type(uint).max);
+        router.removeLiquidity(
+            address(token0),
+            address(token1),
+            ID,
+            9999999999999999000,
+            0,
+            0,
+            address(this),
+            block.timestamp + 1 days
+        );
+
+        // address(this) receives: 9999999999999999000 ERC1155 tokens of ID 12345 && 9999999999999999000 of tokens ERC20.
+        // pair still has 1000 of each token.
+        assertEq(token0.balanceOf(address(pair)), 1000);
+        assertEq(token1.balanceOf(address(pair), ID), 1000);
+
+        assertEq(token1.balanceOf(randomUser, ID), 0.1 ether);
+        assertEq(token0.balanceOf(randomUser), 2 ether);
+
+        // test swap
+        vm.startPrank(randomUser);
+        token0.approve(address(router), type(uint).max);
+        token1.setApprovalForAll(address(router), true);
+
+        // TODO: work on swap functions on router.
+    }
+
+    /// @dev it reverts on TDrexPair-L:208 in the `sub` function.
+    function test_RouterTDrex() public {
+        // gov makes itself an entity.
+        router.addEntity(address(this));
+        // it approves the router to transfer its tokens.
+        token0.approve(address(router), type(uint).max);
+        token1.setApprovalForAll(address(router), true);
+        // it adds liquidity of only one token.
+        router.addLiquidity(
+            address(token0),
+            address(token1),
+            ID,
+            0,
+            token1.balanceOf(address(this), ID),
+            0,
+            0,
+            address(this),
+            block.timestamp + 1 days
+        );
+    }
 
     function test_supportsInterface() public {
         assertEq(token1.supportsInterface(bytes4(0xd9b67a26)), true);

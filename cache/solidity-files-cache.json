@@ -1793,8 +1793,8 @@
       }
     },
     "src/core/TDrexFactory.sol": {
-      "lastModificationDate": 1700515523922,
-      "contentHash": "c289e0e265b9937348a1e0a276267b4d",
+      "lastModificationDate": 1700623849223,
+      "contentHash": "b140c962e8b64738ff1b13d0f44879ae",
       "sourceName": "src/core/TDrexFactory.sol",
       "solcConfig": {
         "settings": {
@@ -1827,6 +1827,9 @@
         }
       },
       "imports": [
+        "lib/forge-std/src/console.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol",
+        "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
         "src/core/TDrexERC20.sol",
         "src/core/TDrexPair.sol",
         "src/interfaces/IERC1155.sol",
@@ -1847,8 +1850,8 @@
       }
     },
     "src/core/TDrexPair.sol": {
-      "lastModificationDate": 1700507101332,
-      "contentHash": "29bba144034af85b56afe277c43f4776",
+      "lastModificationDate": 1700626681243,
+      "contentHash": "196d03578aedfed9e61cc75defe303fd",
       "sourceName": "src/core/TDrexPair.sol",
       "solcConfig": {
         "settings": {
@@ -1881,6 +1884,9 @@
         }
       },
       "imports": [
+        "lib/forge-std/src/console.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol",
+        "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
         "src/core/TDrexERC20.sol",
         "src/interfaces/IERC1155.sol",
         "src/interfaces/IERC1155Burnable.sol",
@@ -2282,7 +2288,7 @@
       }
     },
     "src/libraries/TDrexLibrary.sol": {
-      "lastModificationDate": 1700534155222,
+      "lastModificationDate": 1700618899833,
       "contentHash": "793e1a8777a24ad9e6e7a85fd482f055",
       "sourceName": "src/libraries/TDrexLibrary.sol",
       "solcConfig": {
@@ -2316,7 +2322,9 @@
         }
       },
       "imports": [
+        "lib/forge-std/src/console.sol",
         "lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
         "src/core/TDrexERC20.sol",
         "src/core/TDrexPair.sol",
@@ -2456,7 +2464,9 @@
         }
       },
       "imports": [
+        "lib/forge-std/src/console.sol",
         "lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
         "src/core/TDrexERC20.sol",
         "src/core/TDrexPair.sol",
@@ -2481,8 +2491,8 @@
       }
     },
     "test/TDrexTest.t.sol": {
-      "lastModificationDate": 1700619587763,
-      "contentHash": "43cf963c0a2a4a176de7ceaf4f30d8fc",
+      "lastModificationDate": 1700627110943,
+      "contentHash": "470480e594fb3776556f0ffad5bf6a4d",
       "sourceName": "test/TDrexTest.t.sol",
       "solcConfig": {
         "settings": {

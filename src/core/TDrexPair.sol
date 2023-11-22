@@ -9,6 +9,8 @@ import "../libraries/UQ112x122.sol";
 import "../interfaces/IERC20.sol";
 import "../interfaces/ITDrexFactory.sol";
 import "../interfaces/IERC1155Burnable.sol";
+import "../../lib/forge-std/src/console.sol";
+import "openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol";
 
 // import "./interfaces/IUniswapV2Callee.sol";
 
@@ -19,7 +21,7 @@ import "../interfaces/IERC1155Burnable.sol";
  * 1.
  */
 
-contract TDrexPair is TDrexERC20 {
+contract TDrexPair is TDrexERC20, IERC1155Receiver {
     using SafeMath for uint;
     using UQ112x112 for uint224;
 
@@ -38,8 +40,14 @@ contract TDrexPair is TDrexERC20 {
 
     uint public constant MINIMUM_LIQUIDITY = 10 ** 3;
     // TODO: check whether the function's sig to be called for ERC1155 transfer is this one.
-    bytes4 private constant SELECTOR =
+    bytes4 private constant ERC20_SELECTOR =
         bytes4(keccak256(bytes("transfer(address,uint256)")));
+    bytes4 private constant ERC1155_SELECTOR =
+        bytes4(
+            keccak256(
+                bytes("safeTransferFrom(address,address,uint256,uint256,bytes)")
+            )
+        );
 
     ITDrexFactory public factory;
     address public token0;
@@ -82,13 +90,29 @@ contract TDrexPair is TDrexERC20 {
         _blockTimestampLast = blockTimestampLast;
     }
 
-    function _safeTransfer(address token, address to, uint value) private {
+    function _safeTransferERC20(address token, address to, uint value) private {
         (bool success, bytes memory data) = token.call(
-            abi.encodeWithSelector(SELECTOR, to, value)
+            abi.encodeWithSelector(ERC20_SELECTOR, to, value)
         );
         require(
             success && (data.length == 0 || abi.decode(data, (bool))),
-            "TDrex: TRANSFER_FAILED"
+            "TDrex: ERC20_TRANSFER_FAILED"
+        );
+    }
+
+    function _safeTransferERC1155(
+        address token,
+        address from,
+        address to,
+        uint id,
+        uint value
+    ) private {
+        (bool success, bytes memory data) = token.call(
+            abi.encodeWithSelector(ERC1155_SELECTOR, from, to, id, value, "0x")
+        );
+        require(
+            success && (data.length == 0 || abi.decode(data, (bool))),
+            "TDrex: ERC1155_TRANSFER_FAILED"
         );
     }
 
@@ -193,14 +217,19 @@ contract TDrexPair is TDrexERC20 {
         (uint112 _reserve0, uint112 _reserve1, ) = getReserves(); // gas savings
         uint balance0 = IERC20(token0).balanceOf(address(this));
         uint balance1 = IERC1155(token1).balanceOf(address(this), ID);
+        console.log("198");
         uint amount0 = balance0.sub(_reserve0);
+        console.log("200");
         uint amount1 = balance1.sub(_reserve1);
 
         bool feeOn = _mintFee(_reserve0, _reserve1);
         uint _totalSupply = totalSupply; // gas savings, must be defined here since totalSupply can update in _mintFee
         if (_totalSupply == 0) {
             // TODO: This may not be needed. Locking the first tokens for the zero address, why?
+            // Answer: https://ethereum.stackexchange.com/questions/132491/why-minimum-liquidity-is-used-in-dex-like-uniswap
+            console.log("207");
             liquidity = Math.sqrt(amount0.mul(amount1)).sub(MINIMUM_LIQUIDITY);
+            console.log("210");
             _mint(address(0), MINIMUM_LIQUIDITY); // permanently lock the first MINIMUM_LIQUIDITY tokens
         } else {
             liquidity = Math.min(
@@ -237,8 +266,8 @@ contract TDrexPair is TDrexERC20 {
             "TDrex: INSUFFICIENT_LIQUIDITY_BURNED"
         );
         _burn(address(this), liquidity);
-        _safeTransfer(_token0, to, amount0);
-        _safeTransfer(_token1, to, amount1);
+        _safeTransferERC20(_token0, to, amount0);
+        _safeTransferERC1155(_token1, address(this), to, ID, amount1);
         balance0 = IERC20(_token0).balanceOf(address(this));
         balance1 = IERC1155(_token1).balanceOf(address(this), ID);
 
@@ -307,8 +336,15 @@ contract TDrexPair is TDrexERC20 {
             address _token0 = token0;
             address _token1 = token1;
             if (to == _token0 || to == _token1) revert Pair_Invalid_To();
-            if (amount0Out > 0) _safeTransfer(_token0, to, amount0Out); // optimistically transfer tokens
-            if (amount1Out > 0) _safeTransfer(_token1, to, amount1Out); // optimistically transfer tokens
+            if (amount0Out > 0) _safeTransferERC20(_token0, to, amount0Out); // optimistically transfer tokens
+            if (amount1Out > 0)
+                _safeTransferERC1155(
+                    _token1,
+                    address(this),
+                    to,
+                    ID,
+                    amount1Out
+                ); // optimistically transfer tokens
             // TODO: disallow flashSwap functionality?
             /*
             if (data.length > 0)
@@ -356,14 +392,16 @@ contract TDrexPair is TDrexERC20 {
     function skim(address to) external lock {
         address _token0 = token0; // gas savings
         address _token1 = token1; // gas savings
-        _safeTransfer(
+        _safeTransferERC20(
             _token0,
             to,
             IERC20(_token0).balanceOf(address(this)).sub(reserve0)
         );
-        _safeTransfer(
+        _safeTransferERC1155(
             _token1,
+            address(this),
             to,
+            ID,
             IERC1155(_token1).balanceOf(address(this), ID).sub(reserve1)
         );
     }
@@ -376,5 +414,43 @@ contract TDrexPair is TDrexERC20 {
             reserve0,
             reserve1
         );
+    }
+
+    // IERC1155Receiver
+    function onERC1155Received(
+        address operator,
+        address from,
+        uint256 id,
+        uint256 value,
+        bytes calldata data
+    ) external returns (bytes4) {
+        return
+            bytes4(
+                keccak256(
+                    "onERC1155Received(address,address,uint256,uint256,bytes)"
+                )
+            );
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) external pure returns (bool) {
+        if (interfaceId == bytes4(0x36372b07)) return true;
+        return false;
+    }
+
+    function onERC1155BatchReceived(
+        address operator,
+        address from,
+        uint256[] calldata ids,
+        uint256[] calldata values,
+        bytes calldata data
+    ) external returns (bytes4) {
+        return
+            bytes4(
+                keccak256(
+                    "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"
+                )
+            );
     }
 }

@@ -13,7 +13,8 @@ pragma solidity ^0.8.13;
 import "../interfaces/ITDrexFactory.sol";
 import "../interfaces/ITDrexPair.sol";
 import "./TDrexPair.sol";
-import "../interfaces/IERC165.sol";
+
+// import "../interfaces/IERC165.sol";
 
 contract TDrexFactory is ITDrexFactory {
     // errors
