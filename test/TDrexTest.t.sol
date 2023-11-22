@@ -103,6 +103,30 @@ contract CounterTest is Test, IERC1155Receiver {
             1 ether
         );
 
+        /**
+         * getAmountOut
+         * amountIn, reserveIn, reserveOut
+         * MATH BELOW:
+         * amountOut = amountIn * 0,97% * reserveOut / (reserveIn + amountIn * 0,97%)
+         * 0.3% fee for protocol.
+         */
+        uint amountOut = TDrexLibrary.getAmountOut(
+            1 ether, // amountIn
+            token0.totalSupply(), // reserveIn, 10 ether
+            token1.balanceOf(address(this), ID) // reserveOut, 10 ether
+        );
+        assertEq(amountOut, 906610893880149131); // 0.906... ether
+
+        /**
+         * getAmountIn
+         */
+        uint amountIn = TDrexLibrary.getAmountIn(
+            906610893880149131, // amountOut- erc1155
+            token1.balanceOf(address(this), ID), // reserveIn
+            token0.totalSupply() // reserveOut
+        );
+        assertEq(amountIn, 1 ether);
+
         // getReserves returns reserves
         (uint reserveA, uint reserveB) = TDrexLibrary.getReserves(
             address(factory),
@@ -110,7 +134,7 @@ contract CounterTest is Test, IERC1155Receiver {
             address(token0),
             ID
         );
-        //
+
         (uint reverseReserveA, uint reverseReserveB) = TDrexLibrary.getReserves(
             address(factory),
             address(token1),
