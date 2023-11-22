@@ -102,6 +102,28 @@ contract CounterTest is Test, IERC1155Receiver {
             ),
             1 ether
         );
+
+        // getReserves returns reserves
+        (uint reserveA, uint reserveB) = TDrexLibrary.getReserves(
+            address(factory),
+            address(token1),
+            address(token0),
+            ID
+        );
+        //
+        (uint reverseReserveA, uint reverseReserveB) = TDrexLibrary.getReserves(
+            address(factory),
+            address(token1),
+            address(token0),
+            ID
+        );
+
+        // getReserves returns reserves
+        assert(reserveA == 0);
+        // getReserves sorts tokens
+        assert(reserveA == reverseReserveA);
+        // getReserves returns reserves
+        assert(reserveA == reserveB);
     }
 
     function test_addRouter() public {}
