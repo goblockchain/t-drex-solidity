@@ -101,7 +101,7 @@ contract CounterTest is Test, IERC1155Receiver {
                 token0.totalSupply(),
                 token1.balanceOf(address(this), ID)
             ),
-            1 ether
+            833333333333333333
         );
 
         /**
@@ -116,7 +116,7 @@ contract CounterTest is Test, IERC1155Receiver {
             token0.totalSupply(), // reserveIn, 10 ether
             token1.balanceOf(address(this), ID) // reserveOut, 10 ether
         );
-        assertEq(amountOut, 906610893880149131); // 0.906... ether
+        assertEq(amountOut, 767100100023082249); // 0.906... ether
 
         /**
          * getAmountIn
@@ -126,7 +126,7 @@ contract CounterTest is Test, IERC1155Receiver {
             token1.balanceOf(address(this), ID), // reserveIn
             token0.totalSupply() // reserveOut
         );
-        assertEq(amountIn, 1 ether);
+        assertEq(amountIn, 819712444874338082);
 
         // getReserves returns reserves
         (uint reserveA, uint reserveB) = TDrexLibrary.getReserves(
@@ -158,7 +158,7 @@ contract CounterTest is Test, IERC1155Receiver {
         // it approves the router to transfer its tokens.
         token0.approve(address(router), type(uint).max);
         token1.setApprovalForAll(address(router), true);
-        // it adds liquidity of both tokens at once.
+        // liquidity is added for both tokens at once.
         router.addLiquidity(
             address(token0),
             address(token1),
@@ -194,12 +194,45 @@ contract CounterTest is Test, IERC1155Receiver {
         assertEq(token1.balanceOf(randomUser, ID), 0.1 ether);
         assertEq(token0.balanceOf(randomUser), 2 ether);
 
-        // test swap
+        //NOTE: test swap
+
+        // approve router to get tokens.
         vm.startPrank(randomUser);
         token0.approve(address(router), type(uint).max);
         token1.setApprovalForAll(address(router), true);
 
-        // TODO: work on swap functions on router.
+        // setup path
+        address[] memory path = new address[](2);
+        path[0] = address(token0);
+        path[1] = address(token1);
+
+        // swap ERC20 -> ERC1155
+        router.swapERC20TokensForERC1155Tokens(
+            token0.balanceOf(randomUser),
+            0,
+            path,
+            ID,
+            randomUser,
+            block.timestamp + 1 days
+        );
+
+        // check `randomUser` got ERC1155 tokens
+        assertEq(token1.balanceOf(randomUser, ID), 0.1 ether + 999);
+
+        // setup path
+        path[0] = address(token1);
+        path[1] = address(token0);
+
+        // swap ERC1155 -> ERC20
+        router.swapERC1155TokensForERC20Tokens(
+            token1.balanceOf(randomUser, ID),
+            0,
+            path,
+            ID,
+            randomUser,
+            block.timestamp + 1 days
+        );
+        assertEq(token0.balanceOf(randomUser), 2000000000000000979);
     }
 
     /// @dev it reverts on TDrexPair-L:208 in the `sub` function.
@@ -209,13 +242,16 @@ contract CounterTest is Test, IERC1155Receiver {
         // it approves the router to transfer its tokens.
         token0.approve(address(router), type(uint).max);
         token1.setApprovalForAll(address(router), true);
+        uint balance1 = token1.balanceOf(address(this), ID);
+
         // it adds liquidity of only one token.
+        vm.expectRevert();
         router.addLiquidity(
             address(token0),
             address(token1),
             ID,
             0,
-            token1.balanceOf(address(this), ID),
+            balance1,
             0,
             0,
             address(this),

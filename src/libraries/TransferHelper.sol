@@ -40,6 +40,23 @@ library TransferHelper {
         );
     }
 
+    function safeTransferERC1155From(
+        address token,
+        address from,
+        address to,
+        uint id,
+        uint256 value
+    ) internal {
+        // bytes4(keccak256(bytes('safeTransferFrom(address,address,uint256,uint256,bytes)')));
+        (bool success, bytes memory data) = token.call(
+            abi.encodeWithSelector(0xf242432a, from, to, id, value, "0x")
+        );
+        require(
+            success && (data.length == 0 || abi.decode(data, (bool))),
+            "TransferHelper::transferFrom: transferFrom failed"
+        );
+    }
+
     function safeTransferNative(address to, uint256 value) internal {
         (bool success, ) = to.call{value: value}(new bytes(0));
         require(

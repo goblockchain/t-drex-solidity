@@ -8,6 +8,7 @@ import "../../lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol";
 import "../interfaces/ITDrexPair.sol";
 import "../core/TDrexPair.sol";
 import "../interfaces/ITDrexFactory.sol";
+import "../../lib/forge-std/src/console.sol";
 
 library TDrexLibrary {
     using SafeMath for uint;
@@ -124,7 +125,29 @@ library TDrexLibrary {
         amountIn = (numerator / denominator).add(1);
     }
 
+    function getAmountsOut(
+        address factory,
+        uint amountIn,
+        address[] memory path,
+        uint id
+    ) internal view returns (uint[] memory amounts) {
+        uint length = path.length;
+        amounts = new uint[](length);
+        amounts[0] = amountIn;
+        // first must be an ERC20 token and second must be an ERC1155 token.
+        if (length != 2) revert Library_Invalid_Path(length);
+        (uint reserveIn, uint reserveOut) = getReserves(
+            factory,
+            path[0],
+            path[1],
+            id
+        );
+
+        amounts[1] = getAmountOut(amountIn, reserveIn, reserveOut);
+    }
+
     // performs chained getAmountOut calculations on any number of pairs
+    /*
     function getAmountsOut(
         address factory,
         uint amountIn,
@@ -148,6 +171,7 @@ library TDrexLibrary {
             }
         }
     }
+    */
 
     // performs chained getAmountIn calculations on any number of pairs
     function getAmountsIn(

@@ -20,6 +20,8 @@ import "../interfaces/IERC20.sol";
 // INative
 import "../interfaces/INative.sol";
 
+import "../../lib/forge-std/src/console.sol";
+
 // IERC1155
 // import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
@@ -442,33 +444,73 @@ contract TDrexRouter {
       ╚═════════════════════════════╝*/
     // requires the initial amount to have already been sent to the first pair
 
+    /// @notice the function below expects the tokens to have been sent atomically to the pair contract. It only calls the pair contract.
+    /// @param amounts amounts desired to be swapped.
+    /// @param path path of tokens to swap: ERC20 -> ERC1155 or ERC1155 -> ERC20.
+    /// @param id ID of ERC1155 token.
+    /// @param to the address to which tokens will go to after the swap.
     function _swap(
         uint[] memory amounts,
         address[] memory path,
-        uint id, // TODO: possible need to pass array of `ids`.
-        address _to
+        uint id,
+        address to
     ) internal virtual {
-        uint pathLength = path.length; // gas optimization: cache array length.
-        for (uint i; i < pathLength - 1; ) {
-            (address input, address output) = (path[i], path[i + 1]);
-            (address token0, ) = TDrexLibrary.sortTokens(input, output);
-            uint amountOut = amounts[i + 1];
-            (uint amount0Out, uint amount1Out) = input == token0
-                ? (uint(0), amountOut)
-                : (amountOut, uint(0));
-            address to = i < pathLength - 2
-                ? TDrexLibrary.pairFor(factory, output, path[i + 2], id)
-                : _to;
-            ITDrexPair(TDrexLibrary.pairFor(factory, input, output, id)).swap(
-                amount0Out,
-                amount1Out,
-                to,
-                new bytes(0)
-            );
-            unchecked {
-                ++i; // unchecked because i < pathLength
-            }
-        }
+        (address input, address output) = (path[0], path[1]);
+        (address token0, ) = TDrexLibrary.sortTokens(input, output);
+        uint amountOut = amounts[1];
+        (uint amount0Out, uint amount1Out) = input == token0
+            ? (uint(0), amountOut)
+            : (amountOut, uint(0));
+        ITDrexPair(TDrexLibrary.pairFor(factory, input, output, id)).swap(
+            amount0Out,
+            amount1Out,
+            to
+        );
+    }
+
+    function swapERC20TokensForERC1155Tokens(
+        uint amountIn,
+        uint amountOutMin,
+        address[] calldata path,
+        uint id, // ERC1155 id.
+        address to,
+        uint deadline
+    ) external returns (uint[] memory amounts) {
+        ensure(deadline);
+        amounts = TDrexLibrary.getAmountsOut(factory, amountIn, path, id);
+        // should we have the `amountOutMin`? I don't think so.
+        if (amounts[amounts.length - 1] < amountOutMin)
+            revert Router_Insufficient_OUTPUT_Amount(amountOutMin);
+        TransferHelper.safeTransferFrom(
+            path[0],
+            msg.sender,
+            TDrexLibrary.pairFor(factory, path[0], path[1], id),
+            amountIn
+        );
+        _swap(amounts, path, id, to);
+    }
+
+    function swapERC1155TokensForERC20Tokens(
+        uint amountIn,
+        uint amountOutMin,
+        address[] calldata path,
+        uint id, // ERC1155 id.
+        address to,
+        uint deadline
+    ) external returns (uint[] memory amounts) {
+        ensure(deadline);
+        amounts = TDrexLibrary.getAmountsOut(factory, amountIn, path, id);
+        // should we have the `amountOutMin`? I don't think so.
+        if (amounts[amounts.length - 1] < amountOutMin)
+            revert Router_Insufficient_OUTPUT_Amount(amountOutMin);
+        TransferHelper.safeTransferERC1155From(
+            path[0],
+            msg.sender,
+            TDrexLibrary.pairFor(factory, path[0], path[1], id),
+            id,
+            amountIn
+        );
+        _swap(amounts, path, id, to);
     }
 
     function swapExactTokensForTokens(
@@ -653,7 +695,7 @@ contract TDrexRouter {
             address to = i < path.length - 2
                 ? TDrexLibrary.pairFor(factory, output, path[i + 2], id)
                 : _to;
-            pair.swap(amount0Out, amount1Out, to, new bytes(0));
+            pair.swap(amount0Out, amount1Out, to);
             unchecked {
                 ++i;
             }

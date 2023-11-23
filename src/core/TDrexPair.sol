@@ -29,7 +29,8 @@ contract TDrexPair is TDrexERC20, IERC1155Receiver {
     error Pair_Forbidden();
     error Pair_Overflow(uint balance0, uint balance1);
     error Pair_Insufficient_Minted();
-    error Pair_Insufficient_Output(uint amount1, uint amount2);
+    error Pair_Insufficient_Output();
+    error Pair_Insufficient_Input();
     // here uint >= uint112 comparison is made.
     error Pair_Insufficient_Liquidity(uint amount1, uint amount2);
     error Pair_Invalid_To();
@@ -127,6 +128,7 @@ contract TDrexPair is TDrexERC20, IERC1155Receiver {
         address indexed sender,
         uint amount0In,
         uint amount1In,
+        uint id,
         uint amount0Out,
         uint amount1Out,
         address indexed to
@@ -163,12 +165,6 @@ contract TDrexPair is TDrexERC20, IERC1155Receiver {
         uint112 _reserve0,
         uint112 _reserve1
     ) private {
-        /*
-        require(
-            balance0 <= uint112(-1) && balance1 <= uint112(-1),
-            "TDrex: OVERFLOW"
-        );
-        */
         if (balance0 > type(uint112).max || balance1 > type(uint112).max)
             revert Pair_Overflow(balance0, balance1);
         uint32 blockTimestamp = uint32(block.timestamp % 2 ** 32);
@@ -217,9 +213,7 @@ contract TDrexPair is TDrexERC20, IERC1155Receiver {
         (uint112 _reserve0, uint112 _reserve1, ) = getReserves(); // gas savings
         uint balance0 = IERC20(token0).balanceOf(address(this));
         uint balance1 = IERC1155(token1).balanceOf(address(this), ID);
-        console.log("198");
         uint amount0 = balance0.sub(_reserve0);
-        console.log("200");
         uint amount1 = balance1.sub(_reserve1);
 
         bool feeOn = _mintFee(_reserve0, _reserve1);
@@ -227,9 +221,7 @@ contract TDrexPair is TDrexERC20, IERC1155Receiver {
         if (_totalSupply == 0) {
             // TODO: This may not be needed. Locking the first tokens for the zero address, why?
             // Answer: https://ethereum.stackexchange.com/questions/132491/why-minimum-liquidity-is-used-in-dex-like-uniswap
-            console.log("207");
             liquidity = Math.sqrt(amount0.mul(amount1)).sub(MINIMUM_LIQUIDITY);
-            console.log("210");
             _mint(address(0), MINIMUM_LIQUIDITY); // permanently lock the first MINIMUM_LIQUIDITY tokens
         } else {
             liquidity = Math.min(
@@ -318,16 +310,11 @@ contract TDrexPair is TDrexERC20, IERC1155Receiver {
     }
 
     // this low-level function should be called from a contract which performs important safety checks
-    function swap(
-        uint amount0Out,
-        uint amount1Out,
-        address to,
-        bytes calldata data
-    ) external lock {
-        if (amount0Out == 0 || amount1Out == 0)
-            revert Pair_Insufficient_Output(amount0Out, amount1Out);
+    function swap(uint amount0Out, uint amount1Out, address to) external lock {
+        if (amount0Out == 0 && amount1Out == 0)
+            revert Pair_Insufficient_Output();
         (uint112 _reserve0, uint112 _reserve1, ) = getReserves(); // gas savings
-        if (amount0Out >= _reserve0 || amount1Out >= _reserve1)
+        if (amount0Out >= _reserve0 && amount1Out >= _reserve1)
             revert Pair_Insufficient_Liquidity(amount0Out, amount1Out);
         uint balance0;
         uint balance1;
@@ -336,6 +323,7 @@ contract TDrexPair is TDrexERC20, IERC1155Receiver {
             address _token0 = token0;
             address _token1 = token1;
             if (to == _token0 || to == _token1) revert Pair_Invalid_To();
+
             if (amount0Out > 0) _safeTransferERC20(_token0, to, amount0Out); // optimistically transfer tokens
             if (amount1Out > 0)
                 _safeTransferERC1155(
@@ -344,17 +332,7 @@ contract TDrexPair is TDrexERC20, IERC1155Receiver {
                     to,
                     ID,
                     amount1Out
-                ); // optimistically transfer tokens
-            // TODO: disallow flashSwap functionality?
-            /*
-            if (data.length > 0)
-                IUniswapV2Callee(to).uniswapV2Call(
-                    msg.sender,
-                    amount0Out,
-                    amount1Out,
-                    data
                 );
-            */
             balance0 = IERC20(_token0).balanceOf(address(this));
             balance1 = IERC1155(_token1).balanceOf(address(this), ID);
         }
@@ -364,12 +342,9 @@ contract TDrexPair is TDrexERC20, IERC1155Receiver {
         uint amount1In = balance1 > _reserve1 - amount1Out
             ? balance1 - (_reserve1 - amount1Out)
             : 0;
-        require(
-            amount0In > 0 || amount1In > 0,
-            "UniswapV2: INSUFFICIENT_INPUT_AMOUNT"
-        );
+        if (amount0In == 0 && amount1In == 0) revert Pair_Insufficient_Input();
         {
-            // scope for reserve{0,1}Adjusted, avoids stack too deep errors
+            // scope for reserve{0,1} Adjusted, avoids stack too deep errors
             // TODO: parametrize fee.
             uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3));
             uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3));
@@ -377,15 +352,17 @@ contract TDrexPair is TDrexERC20, IERC1155Receiver {
                 balance0Adjusted.mul(balance1Adjusted) <
                 uint(_reserve0).mul(_reserve1).mul(1000 ** 2)
             ) revert Pair_TDrex_K();
-            require(
-                balance0Adjusted.mul(balance1Adjusted) >=
-                    uint(_reserve0).mul(_reserve1).mul(1000 ** 2),
-                "UniswapV2: K"
-            );
         }
-
         _update(balance0, balance1, _reserve0, _reserve1);
-        emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
+        emit Swap(
+            msg.sender,
+            amount0In,
+            amount1In,
+            ID,
+            amount0Out,
+            amount1Out,
+            to
+        );
     }
 
     // force balances to match reserves
