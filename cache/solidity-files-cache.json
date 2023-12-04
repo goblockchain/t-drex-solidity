@@ -49,7 +49,7 @@
       "versionRequirement": ">=0.5.0",
       "artifacts": {
         "DSTest": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "test.sol/DSTest.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "test.sol/DSTest.json"
         }
       }
     },
@@ -94,13 +94,13 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "CommonBase": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "Base.sol/CommonBase.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "Base.sol/CommonBase.json"
         },
         "ScriptBase": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "Base.sol/ScriptBase.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "Base.sol/ScriptBase.json"
         },
         "TestBase": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "Base.sol/TestBase.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "Base.sol/TestBase.json"
         }
       }
     },
@@ -156,7 +156,7 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "Script": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "Script.sol/Script.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "Script.sol/Script.json"
         }
       }
     },
@@ -201,7 +201,7 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "StdAssertions": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StdAssertions.sol/StdAssertions.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StdAssertions.sol/StdAssertions.json"
         }
       }
     },
@@ -245,7 +245,7 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "StdChains": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StdChains.sol/StdChains.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StdChains.sol/StdChains.json"
         }
       }
     },
@@ -291,10 +291,10 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "StdCheats": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StdCheats.sol/StdCheats.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StdCheats.sol/StdCheats.json"
         },
         "StdCheatsSafe": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StdCheats.sol/StdCheatsSafe.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StdCheats.sol/StdCheatsSafe.json"
         }
       }
     },
@@ -336,7 +336,7 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "stdError": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StdError.sol/stdError.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StdError.sol/stdError.json"
         }
       }
     },
@@ -378,7 +378,7 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "StdInvariant": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StdInvariant.sol/StdInvariant.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StdInvariant.sol/StdInvariant.json"
         }
       }
     },
@@ -422,7 +422,7 @@
       "versionRequirement": ">=0.6.0, <0.9.0",
       "artifacts": {
         "stdJson": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StdJson.sol/stdJson.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StdJson.sol/stdJson.json"
         }
       }
     },
@@ -464,7 +464,7 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "stdMath": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StdMath.sol/stdMath.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StdMath.sol/stdMath.json"
         }
       }
     },
@@ -508,10 +508,10 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "stdStorage": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StdStorage.sol/stdStorage.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StdStorage.sol/stdStorage.json"
         },
         "stdStorageSafe": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StdStorage.sol/stdStorageSafe.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StdStorage.sol/stdStorageSafe.json"
         }
       }
     },
@@ -555,7 +555,7 @@
       "versionRequirement": ">=0.4.22, <0.9.0",
       "artifacts": {
         "StdStyle": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StdStyle.sol/StdStyle.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StdStyle.sol/StdStyle.json"
         }
       }
     },
@@ -600,7 +600,7 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "StdUtils": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StdUtils.sol/StdUtils.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StdUtils.sol/StdUtils.json"
         }
       }
     },
@@ -660,7 +660,7 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "Test": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "Test.sol/Test.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "Test.sol/Test.json"
         }
       }
     },
@@ -702,10 +702,10 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "Vm": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "Vm.sol/Vm.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "Vm.sol/Vm.json"
         },
         "VmSafe": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "Vm.sol/VmSafe.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "Vm.sol/VmSafe.json"
         }
       }
     },
@@ -747,7 +747,7 @@
       "versionRequirement": ">=0.4.22, <0.9.0",
       "artifacts": {
         "console": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "console.sol/console.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "console.sol/console.json"
         }
       }
     },
@@ -789,7 +789,7 @@
       "versionRequirement": ">=0.4.22, <0.9.0",
       "artifacts": {
         "console2": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "console2.sol/console2.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "console2.sol/console2.json"
         }
       }
     },
@@ -831,7 +831,7 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "IMulticall3": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "IMulticall3.sol/IMulticall3.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "IMulticall3.sol/IMulticall3.json"
         }
       }
     },
@@ -873,7 +873,7 @@
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "safeconsole": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "safeconsole.sol/safeconsole.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "safeconsole.sol/safeconsole.json"
         }
       }
     },
@@ -917,7 +917,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "IERC165": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "interfaces/IERC165.sol/IERC165.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "interfaces/IERC165.sol/IERC165.json"
         }
       }
     },
@@ -959,13 +959,13 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "IERC1155Errors": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "draft-IERC6093.sol/IERC1155Errors.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "draft-IERC6093.sol/IERC1155Errors.json"
         },
         "IERC20Errors": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "draft-IERC6093.sol/IERC20Errors.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "draft-IERC6093.sol/IERC20Errors.json"
         },
         "IERC721Errors": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "draft-IERC6093.sol/IERC721Errors.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "draft-IERC6093.sol/IERC721Errors.json"
         }
       }
     },
@@ -1018,7 +1018,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "ERC1155": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "ERC1155.sol/ERC1155.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "ERC1155.sol/ERC1155.json"
         }
       }
     },
@@ -1062,7 +1062,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "IERC1155": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "ERC1155/IERC1155.sol/IERC1155.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "ERC1155/IERC1155.sol/IERC1155.json"
         }
       }
     },
@@ -1106,7 +1106,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "IERC1155Receiver": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "IERC1155Receiver.sol/IERC1155Receiver.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "IERC1155Receiver.sol/IERC1155Receiver.json"
         }
       }
     },
@@ -1151,7 +1151,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "IERC1155MetadataURI": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "IERC1155MetadataURI.sol/IERC1155MetadataURI.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "IERC1155MetadataURI.sol/IERC1155MetadataURI.json"
         }
       }
     },
@@ -1198,7 +1198,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "ERC20": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "ERC20.sol/ERC20.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "ERC20.sol/ERC20.json"
         }
       }
     },
@@ -1240,7 +1240,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "IERC20": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "ERC20/IERC20.sol/IERC20.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "ERC20/IERC20.sol/IERC20.json"
         }
       }
     },
@@ -1284,7 +1284,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "IERC20Metadata": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "IERC20Metadata.sol/IERC20Metadata.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "IERC20Metadata.sol/IERC20Metadata.json"
         }
       }
     },
@@ -1329,7 +1329,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "Arrays": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "Arrays.sol/Arrays.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "Arrays.sol/Arrays.json"
         }
       }
     },
@@ -1371,7 +1371,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "Context": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "Context.sol/Context.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "Context.sol/Context.json"
         }
       }
     },
@@ -1413,7 +1413,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "StorageSlot": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "StorageSlot.sol/StorageSlot.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "StorageSlot.sol/StorageSlot.json"
         }
       }
     },
@@ -1457,7 +1457,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "ERC165": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "ERC165.sol/ERC165.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "ERC165.sol/ERC165.json"
         }
       }
     },
@@ -1501,7 +1501,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "ERC165Checker": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "ERC165Checker.sol/ERC165Checker.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "ERC165Checker.sol/ERC165Checker.json"
         }
       }
     },
@@ -1543,7 +1543,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "IERC165": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "introspection/IERC165.sol/IERC165.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "introspection/IERC165.sol/IERC165.json"
         }
       }
     },
@@ -1585,7 +1585,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "Math": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "math/Math.sol/Math.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "math/Math.sol/Math.json"
         }
       }
     },
@@ -1642,7 +1642,7 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "CounterScript": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "Counter.s.sol/CounterScript.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "Counter.s.sol/CounterScript.json"
         }
       }
     },
@@ -1699,10 +1699,10 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "mockERC1155Token": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "MockToken.sol/mockERC1155Token.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "MockToken.sol/mockERC1155Token.json"
         },
         "mockERC20Token": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "MockToken.sol/mockERC20Token.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "MockToken.sol/mockERC20Token.json"
         }
       }
     },
@@ -1744,7 +1744,7 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "NATIVE": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "Native.sol/NATIVE.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "Native.sol/NATIVE.json"
         }
       }
     },
@@ -1788,12 +1788,12 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "TDrexERC20": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "TDrexERC20.sol/TDrexERC20.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexERC20.sol/TDrexERC20.json"
         }
       }
     },
     "src/core/TDrexFactory.sol": {
-      "lastModificationDate": 1700623849223,
+      "lastModificationDate": 1701732032991,
       "contentHash": "b140c962e8b64738ff1b13d0f44879ae",
       "sourceName": "src/core/TDrexFactory.sol",
       "solcConfig": {
@@ -1845,13 +1845,13 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "TDrexFactory": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "TDrexFactory.sol/TDrexFactory.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexFactory.sol/TDrexFactory.json"
         }
       }
     },
     "src/core/TDrexPair.sol": {
-      "lastModificationDate": 1700710388329,
-      "contentHash": "5434a3244c3c32fe13d2574d7c20e29c",
+      "lastModificationDate": 1701731981811,
+      "contentHash": "a48474a7ebaf3de5329cfceca4cbb55f",
       "sourceName": "src/core/TDrexPair.sol",
       "solcConfig": {
         "settings": {
@@ -1900,7 +1900,7 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "TDrexPair": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "TDrexPair.sol/TDrexPair.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexPair.sol/TDrexPair.json"
         }
       }
     },
@@ -1944,7 +1944,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "IERC1155": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "IERC1155.sol/IERC1155.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "IERC1155.sol/IERC1155.json"
         }
       }
     },
@@ -1989,7 +1989,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "IERC1155Burnable": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "IERC1155Burnable.sol/IERC1155Burnable.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "IERC1155Burnable.sol/IERC1155Burnable.json"
         }
       }
     },
@@ -2031,7 +2031,7 @@
       "versionRequirement": "^0.8.20",
       "artifacts": {
         "IERC165": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "IERC165.sol/IERC165.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "IERC165.sol/IERC165.json"
         }
       }
     },
@@ -2073,7 +2073,7 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "IERC20": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "IERC20.sol/IERC20.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "IERC20.sol/IERC20.json"
         }
       }
     },
@@ -2115,7 +2115,7 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "INative": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "INative.sol/INative.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "INative.sol/INative.json"
         }
       }
     },
@@ -2157,7 +2157,7 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "ITDrexFactory": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "ITDrexFactory.sol/ITDrexFactory.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "ITDrexFactory.sol/ITDrexFactory.json"
         }
       }
     },
@@ -2199,7 +2199,7 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "ITDrexPair": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "ITDrexPair.sol/ITDrexPair.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "ITDrexPair.sol/ITDrexPair.json"
         }
       }
     },
@@ -2241,7 +2241,7 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "Math": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "Math.sol/Math.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "Math.sol/Math.json"
         }
       }
     },
@@ -2283,13 +2283,13 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "SafeMath": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "SafeMath.sol/SafeMath.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "SafeMath.sol/SafeMath.json"
         }
       }
     },
     "src/libraries/TDrexLibrary.sol": {
-      "lastModificationDate": 1700710369879,
-      "contentHash": "91f11bfa49640c3a94cf8499a7ad3c25",
+      "lastModificationDate": 1701732172001,
+      "contentHash": "3761983f934eb3ba7d35c347ef6e0b64",
       "sourceName": "src/libraries/TDrexLibrary.sol",
       "solcConfig": {
         "settings": {
@@ -2324,24 +2324,15 @@
       "imports": [
         "lib/forge-std/src/console.sol",
         "lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
-        "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
-        "src/core/TDrexERC20.sol",
-        "src/core/TDrexPair.sol",
-        "src/interfaces/IERC1155.sol",
-        "src/interfaces/IERC1155Burnable.sol",
-        "src/interfaces/IERC165.sol",
-        "src/interfaces/IERC20.sol",
         "src/interfaces/ITDrexFactory.sol",
         "src/interfaces/ITDrexPair.sol",
-        "src/libraries/Math.sol",
-        "src/libraries/SafeMath.sol",
-        "src/libraries/UQ112x122.sol"
+        "src/libraries/SafeMath.sol"
       ],
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "TDrexLibrary": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "TDrexLibrary.sol/TDrexLibrary.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexLibrary.sol/TDrexLibrary.json"
         }
       }
     },
@@ -2383,7 +2374,7 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "TransferHelper": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "TransferHelper.sol/TransferHelper.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "TransferHelper.sol/TransferHelper.json"
         }
       }
     },
@@ -2425,13 +2416,13 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "UQ112x112": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "UQ112x122.sol/UQ112x112.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "UQ112x122.sol/UQ112x112.json"
         }
       }
     },
     "src/periphery/TDrexRouter.sol": {
-      "lastModificationDate": 1700710163109,
-      "contentHash": "75007686fa23ab81899c5ea6b2c300ba",
+      "lastModificationDate": 1701732551061,
+      "contentHash": "c8a5f0f92d349ae4381171ddd0b4017c",
       "sourceName": "src/periphery/TDrexRouter.sol",
       "solcConfig": {
         "settings": {
@@ -2466,33 +2457,26 @@
       "imports": [
         "lib/forge-std/src/console.sol",
         "lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
-        "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol",
+        "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol",
         "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
-        "src/core/TDrexERC20.sol",
-        "src/core/TDrexPair.sol",
-        "src/interfaces/IERC1155.sol",
-        "src/interfaces/IERC1155Burnable.sol",
-        "src/interfaces/IERC165.sol",
         "src/interfaces/IERC20.sol",
         "src/interfaces/INative.sol",
         "src/interfaces/ITDrexFactory.sol",
         "src/interfaces/ITDrexPair.sol",
-        "src/libraries/Math.sol",
         "src/libraries/SafeMath.sol",
         "src/libraries/TDrexLibrary.sol",
-        "src/libraries/TransferHelper.sol",
-        "src/libraries/UQ112x122.sol"
+        "src/libraries/TransferHelper.sol"
       ],
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "TDrexRouter": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "TDrexRouter.sol/TDrexRouter.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter.sol/TDrexRouter.json"
         }
       }
     },
     "test/TDrexTest.t.sol": {
-      "lastModificationDate": 1700710869499,
-      "contentHash": "cdd4fee404d16f405ed13e9e36517495",
+      "lastModificationDate": 1700710900759,
+      "contentHash": "48687e529c9692300accc3ea2a600b38",
       "sourceName": "test/TDrexTest.t.sol",
       "solcConfig": {
         "settings": {
@@ -2581,7 +2565,7 @@
       "versionRequirement": "^0.8.13",
       "artifacts": {
         "CounterTest": {
-          "0.8.21+commit.d9974bed.Linux.gcc": "TDrexTest.t.sol/CounterTest.json"
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexTest.t.sol/CounterTest.json"
         }
       }
     }

@@ -10,7 +10,7 @@ import "../interfaces/IERC20.sol";
 import "../interfaces/ITDrexFactory.sol";
 import "../interfaces/IERC1155Burnable.sol";
 import "../../lib/forge-std/src/console.sol";
-import "openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
 // import "./interfaces/IUniswapV2Callee.sol";
 

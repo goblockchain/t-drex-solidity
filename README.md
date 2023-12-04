@@ -94,3 +94,16 @@ $ forge --help
 $ anvil --help
 $ cast --help
 ```
+
+## Deploy on Remix:
+
+1. The deploy should happen in sequence. The sequence must be:
+- [ ] core/Native.sol
+- [ ] core/TDrexFactory.sol
+- [ ] periphery/TDrexRouter.sol 
+
+For this last one (TDrexRouter.sol), the following should be done:
+- [ ] The file should be compiled on Remix with:
+	- Optimization runs equal to 200.
+	- `compiler_config.json` file that it is in this repository should be the file to use for compiling it on Remix. To set the file as the default one, just copy its contents and past it on the compiler_config.json file from remix. The file is under `Compile` -> Advanced Configurations > Use Configuration File. Then click on the file and paste the contents of this local file there. Here you go!
+

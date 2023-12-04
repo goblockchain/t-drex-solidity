@@ -6,7 +6,6 @@ pragma solidity ^0.8.13;
 import "./SafeMath.sol";
 import "../../lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol";
 import "../interfaces/ITDrexPair.sol";
-import "../core/TDrexPair.sol";
 import "../interfaces/ITDrexFactory.sol";
 import "../../lib/forge-std/src/console.sol";
 
