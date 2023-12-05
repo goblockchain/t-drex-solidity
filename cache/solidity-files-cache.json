@@ -2421,8 +2421,8 @@
       }
     },
     "src/periphery/TDrexRouter.sol": {
-      "lastModificationDate": 1701732551061,
-      "contentHash": "c8a5f0f92d349ae4381171ddd0b4017c",
+      "lastModificationDate": 1701738657021,
+      "contentHash": "6742c6ccead4b032bca1edd14d53db29",
       "sourceName": "src/periphery/TDrexRouter.sol",
       "solcConfig": {
         "settings": {
@@ -2471,6 +2471,78 @@
       "artifacts": {
         "TDrexRouter": {
           "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter.sol/TDrexRouter.json"
+        }
+      }
+    },
+    "src/periphery/TDrexRouter_flattened.sol": {
+      "lastModificationDate": 1701737097071,
+      "contentHash": "8924fbf0a629c4a631f5355b46c96191",
+      "sourceName": "src/periphery/TDrexRouter_flattened.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "viaIR": true,
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.13",
+      "artifacts": {
+        "IERC1155": {
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter_flattened.sol/IERC1155.json"
+        },
+        "IERC165": {
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter_flattened.sol/IERC165.json"
+        },
+        "IERC20": {
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter_flattened.sol/IERC20.json"
+        },
+        "INative": {
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter_flattened.sol/INative.json"
+        },
+        "ITDrexFactory": {
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter_flattened.sol/ITDrexFactory.json"
+        },
+        "ITDrexPair": {
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter_flattened.sol/ITDrexPair.json"
+        },
+        "SafeMath": {
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter_flattened.sol/SafeMath.json"
+        },
+        "TDrexLibrary": {
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter_flattened.sol/TDrexLibrary.json"
+        },
+        "TDrexRouter": {
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter_flattened.sol/TDrexRouter.json"
+        },
+        "TransferHelper": {
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter_flattened.sol/TransferHelper.json"
+        },
+        "console": {
+          "0.8.23+commit.f704f362.Linux.gcc": "TDrexRouter_flattened.sol/console.json"
         }
       }
     },

@@ -1,16 +1,10 @@
-// TODO: will we add license?
+// SPDX-License: UNLICENSED
 pragma solidity ^0.8.13;
-
-/*
- * TODO: IMPORTS
- */
 
 // ITDrexFactory
 import "../interfaces/ITDrexFactory.sol";
 // TransferHelper
 import "../libraries/TransferHelper.sol";
-// ITDrexRouter
-// TODO: import
 // TDrexLibrary
 import "../libraries/TDrexLibrary.sol";
 // SafeMath
@@ -20,8 +14,6 @@ import "../interfaces/IERC20.sol";
 // INative
 import "../interfaces/INative.sol";
 
-import "../../lib/forge-std/src/console.sol";
-
 // IERC1155
 import "../../lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
 
@@ -30,15 +22,13 @@ import "../../lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
  * @author TDrex team
  * @notice Since this contract will be inside a permissioned EVM-compatible blockchain, we, therefore, decided to make some assumptions. NOTE that removing these assumptions make this contract to be vulnerable to be deployed in any EVM-compatible mainnet. The assumptions are below:
  * 1. The `tokenB` in addLiquidity/removeLiquidity will always be an ERC1155-like token, enforced by the back-end of the application.
- * 2.
  */
+
 contract TDrexRouter {
-    // NOTE: No need to use SafeMath because of pragma > 0.8
     using SafeMath for uint;
 
     address public immutable factory;
     address public immutable govBr;
-    // TODO: Check what's the wrapped token of the native of the Besu blockchain
     address public immutable WNative;
     mapping(address => bool) entities;
 
@@ -48,7 +38,6 @@ contract TDrexRouter {
 
     // deadline is lesser than current block's timestamp
     error Router_Expired(uint deadline);
-    // TODO: Rename errors with TDREX at the beginning
     // min tokenA liquidity to be added
     error Router_Insufficient_A_Amount(uint amountAMin);
     // min tokenB liquidity to be added
@@ -70,8 +59,6 @@ contract TDrexRouter {
         // @audit-info the below is due to possibility that someone may brick the contract by sending Native directly to it, affecting the constant K.
         assert(msg.sender == WNative); // only accept Native via fallback from the WNative contract.
     }
-
-    // TODO: perform a correct ordering of the functions.
 
     /*╔═════════════════════════════╗
       ║      CHECK FUNCTIONS        ║
@@ -118,11 +105,9 @@ contract TDrexRouter {
             tokenB
         );
         if (ITDrexFactory(factory).getPair(token0, token1, id) == address(0)) {
-            // TODO: pair should have been created in the factory by government already, so erase this line, put a revert here I believe.
             revert Router_PairUnexists();
         }
 
-        // TODO: get initial price instead of reserves...Then the sends must be adding the initialPrice or either token, if pair liquidity can be added in two steps.
         (uint reserveA, uint reserveB) = TDrexLibrary.getReserves(
             factory,
             token0,
@@ -183,14 +168,11 @@ contract TDrexRouter {
             amountBMin
         );
         address pair = TDrexLibrary.pairFor(factory, tokenA, tokenB, id);
-        //TODO: check if isn't it better to use _msgSender() function here?
         TransferHelper.safeTransferFrom(tokenA, msg.sender, pair, amountA);
-        // TODO: add an ID in here, since token B must be always an ERC1155, enforced by the back-end.
+
         IERC1155(tokenB).safeTransferFrom(msg.sender, pair, id, amountB, "0x");
         // TransferHelper.safeTransferFrom(tokenB, msg.sender, pair, amountB);
 
-        //NOTE: This LP token minted when liquidity is added can be the representation of the titulo.
-        // TODO: if two step liquidity is supported, shall we give a different token for each added token of the pair? Im thinking this because of the burn phase - where we will burn the erc20/erc1155-like representation of the person who's added tokenB, but not tokenA, right?
         liquidity = ITDrexPair(pair).mint(to);
     }
 
@@ -288,7 +270,6 @@ contract TDrexRouter {
             address(this),
             deadline
         );
-        // NOTE: Router handles Native probably because pair doesn't handle it. Check it though.
         TransferHelper.safeTransfer(token, to, amountToken);
         INative(WNative).withdraw(amountNative);
         TransferHelper.safeTransferNative(to, amountNative);
@@ -373,7 +354,6 @@ contract TDrexRouter {
 
     // **** REMOVE LIQUIDITY (supporting fee-on-transfer tokens) ****
     //** In the real world, such tokens that support fee on transfer are: SafeMoon, FlokiInu, BabyDoge, Crypter */
-    // NOTE: This use-case is interesting because government may actually want to add a fee on transfer of some token. So, we cover that.
 
     function removeLiquidityNativeSupportingFeeOnTransferTokens(
         address token,
@@ -718,7 +698,6 @@ contract TDrexRouter {
             amountIn
         );
 
-        // TODO: validate whether we're gonna use IERC20 interface or if there's an interface for ERC20-like tokens in the Besu blockchain.
         uint balanceBefore = IERC20(path[path.length - 1]).balanceOf(to);
 
         _swapSupportingFeeOnTransferTokens(path, id, to);
@@ -811,15 +790,6 @@ contract TDrexRouter {
         address[] memory path
     ) public view virtual returns (uint[] memory amounts) {
         return TDrexLibrary.getAmountsOut(factory, amountIn, path, id);
-    }
-
-    function getAmountsIn(
-        uint amountOut,
-        uint id,
-        address[] memory path
-    ) public view virtual returns (uint amounts) {
-        // TODO: replace correctly args in line below.
-        return TDrexLibrary.getAmountIn(amountOut, amountOut, amountOut);
     }
 
     // JUMP opcode is cheaper than CODECOPY opcode as if we had used a modifier.
